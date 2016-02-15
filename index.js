@@ -22,7 +22,7 @@ function himawariURLs(options) {
   var date = resolveDate(options.date);
 
   // Normalize our date
-  normalizeDate(date);
+  date = normalizeDate(date);
 
   // Define some image parameters
   var blocks = options.blocks || (options.zoom ? BLOCK_SIZES[options.zoom - 1] : BLOCK_SIZES[0]);
