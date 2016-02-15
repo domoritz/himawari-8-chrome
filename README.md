@@ -1,6 +1,6 @@
-# Himawari-8 New Tab Page
+# Himawari 8 New Tab Page
 
-Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
+Experience the latest image from the [Himawari 8 satellite](https://en.wikipedia.org/wiki/Himawari_8) every time you open a new tab in Chrome. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
 
 ![screenshot](https://domoritz.github.io/himawari-8-chrome/screenshot.png "Screenshot of the browser with the new tab page")
 
