@@ -31,6 +31,4 @@ Have a look at the [latest image from Himawari 8](https://domoritz.github.io/him
 
 ## Develop
 
-Run `python -m SimpleHTTPServer` and open [localhost:8000](http://localhost:8000/).
-
-
+Run `run.sh` and open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.
