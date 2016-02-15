@@ -27,10 +27,18 @@ abbr {
 #wrapper {
   height: 90vh;
   width: 90vh;
-  overflow: hidden;
 
   display: flex;
   flex-wrap: wrap;
+}
+
+#wrapper img {
+  /* prevent dragging */
+  user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
 }
 
 .animated img {
