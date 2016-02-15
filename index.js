@@ -8,7 +8,7 @@ var BLOCK_SIZES = [1, 4, 8, 16, 20];
  * Returns an array of objects containing URLs and metadata
  * for Himawari 8 image tiles based on a given date.
  * Options:
- * - date: Date object, Date string, or "latest"
+ * - date: Date object, Date string (YYYY-MM-DD HH:MM:SSZ), or "latest"
  * - infrared: boolean (optional)
  * - zoom: number (default: 1)
  * - blocks: alternative to zoom, how many images per row/column (default: 1)
@@ -90,6 +90,17 @@ function normalizeDate(date) {
  */
 function resolveDate(date) {
   if (typeof date === "string") {
+    // Safari is the new IE
+    var isChrome = navigator.userAgent.indexOf('Chrome') > -1;
+    var isSafari = navigator.userAgent.indexOf("Safari") > -1;
+    if ((isChrome)&&(isSafari)) {isSafari=false;}
+
+    if (isSafari) {
+      var parts = date.match(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})Z/);
+      parts[2] -= 1; //months are zero-based
+      return new Date(Date.UTC.apply(this, parts.slice(1)));
+    }
+
     return new Date(date);
   } else {
     return date;
