@@ -2,6 +2,8 @@
 
 Experience the latest image from the [Himawari 8 satellite](https://en.wikipedia.org/wiki/Himawari_8) every time you open a new tab in Chrome. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
 
+Get the extension from the [Chrome web store](https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm).
+
 ![screenshot](https://domoritz.github.io/himawari-8-chrome/screenshot.png "Screenshot of the browser with the new tab page")
 
 
