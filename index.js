@@ -104,8 +104,9 @@ function resolveDate(date) {
  * See https://gist.github.com/carlo/5379498
  */
 function getCachedUrl(url) {
-  // 30 days caching
-  return "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" + url + "&container=focus&refresh=2592000"
+  // 5 days caching, in seconds
+  var cache = 5 * 24 * 60 * 60;
+  return "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=" + url + "&container=focus&refresh=" + cache
 }
 
 /**
