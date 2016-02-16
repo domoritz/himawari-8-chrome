@@ -157,32 +157,45 @@ function getOptimalNumberOfBlocks() {
   return BLOCK_SIZES[BLOCK_SIZES.length - 1];
 }
 
+// the date that is currently loaded
+var loadedDate;
+
 /**
  * Creates an image composed of tiles.
+ * @param {string} date  The date with format YYYY-MM-DD HH:MM:SSZ, e.g. "2016-02-11 2:30:00"
  */
-function setImages() {
+function setImages(date) {
+  if (date === loadedDate) {
+    return;
+  }
+  loadedDate = date;
+
+  var result = himawariURLs({
+    date: date,
+    blocks: getOptimalNumberOfBlocks()
+  });
+
+  var el = document.getElementById("wrapper");
+
+  el.setAttribute("class", "wrapper-" + result.blocks);
+
+  el.innerHTML = "";
+  for (var i = 0; i < result.tiles.length; i++) {
+    var image = document.createElement("img");
+    image.setAttribute("src", result.tiles[i].url);
+    el.appendChild(image);
+  }
+
+  var ago = (Date.now() - result.date.getTime()) / (1000 * 60);
+  document.getElementById("time").innerHTML = "<abbr title=\"" + result.date + "\">" + Math.floor(ago) + " minutes</abbr> ago";
+}
+
+function setLatestImages() {
   getLatestDate(false, function(latest) {
-    var result = himawariURLs({
-      date: latest, //"2016-02-11 2:30:00",
-      blocks: getOptimalNumberOfBlocks()
-    });
-
-    var el = document.getElementById("wrapper");
-
-    el.setAttribute("class", "wrapper-" + result.blocks);
-
-    el.innerHTML = "";
-    for (var i = 0; i < result.tiles.length; i++) {
-      var image = document.createElement("img");
-      image.setAttribute("src", result.tiles[i].url);
-      el.appendChild(image);
-    }
-
-    var ago = (Date.now() - result.date.getTime()) / (1000 * 60);
-    document.getElementById("time").innerHTML = "<abbr title=\"" + result.date + "\">" + Math.floor(ago) + " minutes</abbr> ago";
+    setImages(latest);
   });
 }
 
 // Refresh every 5 minutes
-window.setInterval(setImages, 1000*60*5);
-setImages();
+window.setInterval(setLatestImages, 5*60*1000);
+setLatestImages();
