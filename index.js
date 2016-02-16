@@ -90,18 +90,10 @@ function normalizeDate(date) {
  */
 function resolveDate(date) {
   if (typeof date === "string") {
-    // Safari is the new IE
-    var isChrome = navigator.userAgent.indexOf('Chrome') > -1;
-    var isSafari = navigator.userAgent.indexOf("Safari") > -1;
-    if ((isChrome)&&(isSafari)) {isSafari=false;}
-
-    if (isSafari) {
-      var parts = date.match(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})Z/);
-      parts[2] -= 1; //months are zero-based
-      return new Date(Date.UTC.apply(this, parts.slice(1)));
-    }
-
-    return new Date(date);
+    // Don't use Date.parse because it doesn't work with YYYY-MM-DD HH:MM:SSZ
+    var parts = date.match(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})Z/);
+    parts[2] -= 1; //months are zero-based
+    return new Date(Date.UTC.apply(this, parts.slice(1)));
   } else {
     return date;
   }
