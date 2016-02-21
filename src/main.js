@@ -148,7 +148,7 @@ function getLatestDate(infrared, cb) {
  * Looks at the screen resolution and figures out a zoom level that returns images at a sufficient resolution.
  */
 function getOptimalNumberOfBlocks() {
-  var height = window.innerHeight * window.devicePixelRatio;
+  var height = document.getElementById("output").clientHeight * window.devicePixelRatio;
   var minNumber = height/WIDTH;
 
   for (var i = 0; i < BLOCK_SIZES.length; i++) {
