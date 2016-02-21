@@ -17,7 +17,8 @@
     "build": "rollup -c",
     "watch": "watch 'npm run build' src/",
     "start": "python -m SimpleHTTPServer",
-    "pack": "./pack.sh"
+    "prepack": "npm run build",
+    "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js Roboto_Slab/*.ttf manifest.json"
   },
   "repository": {
     "type": "git",
