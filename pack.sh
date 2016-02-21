@@ -1,3 +1,4 @@
 #!/bin/bash
 
-zip himawari.zip icon*.png index.html style.css index.js manifest.json
+npm run build
+zip himawari.zip icon*.png index.html style.css bundle.js Roboto_Slab/* manifest.json

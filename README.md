@@ -11,15 +11,17 @@ Inspired by https://github.com/jakiestfu/himawari.js/ and https://github.com/ngo
 
 ## Features
 
-* No dependencies, pure JS and CSS
-* Loads the latest image, updates every 5 minutes
-* Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads and inserts tiles.
+* Loads the latest image, updates automatically
+* Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads tiles.
 * Uses Google's caching to take the load from the image servers
+* Caches last version in local storage (compressed jpeg) and immediately displays it when you load the page. Then loads the latest image.
+* Full offline support
+* Images are drawn on a canvas so that we can cache and load it easily.
+* The earth always stay centered, thanks to CSS magic.
 
 
 ## Planned features
 
-* More local caching to increase responsiveness
 * Automatically download a better image if the window is resized
 * Time travel
 * Actual logo/ icon

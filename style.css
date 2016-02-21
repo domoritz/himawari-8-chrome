@@ -8,6 +8,14 @@ body {
   justify-content: center;
 }
 
+@font-face {
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto Slab Regular'), local('RobotoSlab-Regular'), url(Roboto_Slab/RobotoSlab-Regular.ttf) format('truetype');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
 .overlay {
   position: fixed;
   bottom: 10px;
@@ -16,7 +24,7 @@ body {
   font-family: 'Roboto Slab', serif;
   font-size: 15px;
   color: white;
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 abbr {
@@ -24,49 +32,26 @@ abbr {
   border-bottom: 1px dashed;
 }
 
-#wrapper {
-  height: 90vh;
-  width: 90vh;
-
-  display: flex;
-  flex-wrap: wrap;
+/* Always keep the earth centered */
+@media (orientation:landscape) {
+  #output {
+    height: 90vh;
+    width: 90vh;
+  }
+}
+@media screen and (orientation:portrait) {
+  #output {
+    height: 90vw;
+    width: 90vw;
+  }
 }
 
-#wrapper img {
-  /* prevent dragging */
-  user-drag: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-}
-
-.animated img {
-  animation: fadein 0.2s;
+/* Optional animation, not enabled */
+.animated #output {
+  animation: fadein 0.3s;
 }
 
 @keyframes fadein {
   from { opacity: 0; }
   to   { opacity: 1; }
-}
-
-.wrapper-1 img {
-  width: 100%;
-  height: 100%;
-}
-.wrapper-4 img {
-  width: calc(100% / 4);
-  height: calc(100% / 4);
-}
-.wrapper-8 img {
-  width: calc(100% / 8);
-  height: calc(100% / 8);
-}
-.wrapper-16 img {
-  width: calc(100% / 16);
-  height: calc(100% / 16);
-}
-.wrapper-20 img {
-  width: calc(100% / 20);
-  height: calc(100% / 20);
 }

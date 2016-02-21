@@ -1,0 +1,30 @@
+{
+  "name": "himawari-chrome",
+  "version": "0.2.0",
+  "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome.",
+  "main": "index.js",
+  "dependencies": {
+    "d3-queue": "^2.0.2",
+    "d3-request": "^0.4.3"
+  },
+  "devDependencies": {
+    "rollup": "^0.25.4",
+    "rollup-plugin-node-resolve": "^1.4.0",
+    "rollup-plugin-uglify": "^0.2.0",
+    "watch": "^0.17.1"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "watch 'npm run build' src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/domoritz/himawari-8-chrome.git"
+  },
+  "author": "Dominik Moritz",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/domoritz/himawari-8-chrome/issues"
+  },
+  "homepage": "https://github.com/domoritz/himawari-8-chrome#readme"
+}

@@ -1,14 +1,23 @@
+import {queue} from 'd3-queue';
+import {json} from 'd3-request';
+
 var BASE_URL = "http://himawari8-dl.nict.go.jp/himawari8/img/";
 var INFRARED = "INFRARED_FULL";
 var VISIBLE_LIGHT = "D531106";
 var WIDTH = 550;
 var BLOCK_SIZES = [1, 4, 8, 16, 20];
 
+var IMAGE_QUALITY = 0.9;
+var RELOAD_INTERVAL = 2*60*1000;  // 2 minutes
+var RELOAD_TIME_INTERVAL = 10*1000;  // 10 seconds
+var IMAGE_DATA_KEY = "imageData";
+var CACHED_DATE_KEY = "cachedDate";
+
 /**
  * Returns an array of objects containing URLs and metadata
  * for Himawari 8 image tiles based on a given date.
  * Options:
- * - date: Date object, Date string (YYYY-MM-DD HH:MM:SSZ), or "latest"
+ * - date: Date object or Date string (YYYY-MM-DD HH:MM:SSZ)
  * - infrared: boolean (optional)
  * - zoom: number (default: 1)
  * - blocks: alternative to zoom, how many images per row/column (default: 1)
@@ -127,17 +136,12 @@ function pad(num, size) {
  */
 function getLatestDate(infrared, cb) {
   var baseUrl = getBaseURL(infrared);
-  var req = new XMLHttpRequest();
-  req.onload = function() {
-    var data = JSON.parse(req.responseText);
-    var latest = data.query.results.json.date;
-    cb(latest + "Z");
-  };
+  var query = "select date from json where url=\"" + baseUrl + "/latest.json\"";
 
-  // proxy through yahoo because of same origin restrictions
-  var query = "select * from json where url=\"" + baseUrl + "/latest.json\"";
-  req.open("GET", "https://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json", true);
-  req.send();
+  json("https://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json", function(data) {
+      var latest = data.query.results.json.date;
+      cb(resolveDate(latest + "Z"));
+    });
 }
 
 /**
@@ -160,42 +164,117 @@ function getOptimalNumberOfBlocks() {
 // the date that is currently loaded
 var loadedDate;
 
+function updateTimeAgo(date) {
+  var ago = (Date.now() - date.getTime()) / (1000 * 60);
+  document.getElementById("time").innerHTML = "<abbr title=\"" + date + "\">" + Math.floor(ago) + " minutes</abbr> ago";
+}
+
 /**
  * Creates an image composed of tiles.
- * @param {string} date  The date with format YYYY-MM-DD HH:MM:SSZ, e.g. "2016-02-11 2:30:00"
+ * @param {Date object} date  The date for which to load the data.
  */
 function setImages(date) {
-  if (date === loadedDate) {
+  if (loadedDate && date.getTime() === loadedDate.getTime()) {
     return;
   }
-  loadedDate = date;
 
+  // get the URLs for all tiles
   var result = himawariURLs({
     date: date,
     blocks: getOptimalNumberOfBlocks()
   });
 
-  var el = document.getElementById("wrapper");
+  var pixels = result.blocks * WIDTH;
 
-  el.setAttribute("class", "wrapper-" + result.blocks);
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d");
+  ctx.canvas.width = pixels;
+  ctx.canvas.height = pixels;
 
-  el.innerHTML = "";
-  for (var i = 0; i < result.tiles.length; i++) {
-    var image = document.createElement("img");
-    image.setAttribute("src", result.tiles[i].url);
-    el.appendChild(image);
+  var q = queue();
+
+  // add image to canvas and call callback when done
+  function addImage(tile, callback) {
+    var img = new Image();
+    img.setAttribute("crossOrigin", "anonymous");
+    img.onload = function() {
+      ctx.drawImage(img, tile.x * WIDTH, tile.y * WIDTH, WIDTH, WIDTH);
+      callback();
+    }
+    img.src = tile.url;
   }
 
-  var ago = (Date.now() - result.date.getTime()) / (1000 * 60);
-  document.getElementById("time").innerHTML = "<abbr title=\"" + result.date + "\">" + Math.floor(ago) + " minutes</abbr> ago";
+  result.tiles.forEach(function(tile) {
+    q.defer(addImage, tile);
+  });
+
+  // wait for all images to be drawn on canvas
+  q.awaitAll(function(error) {
+    if (error) throw error;
+
+    // copy canvas into output in one step
+    var output = document.getElementById("output");
+    var outCtx = output.getContext("2d")
+    outCtx.canvas.width = pixels;
+    outCtx.canvas.height = pixels;
+    outCtx.drawImage(canvas, 0, 0);
+
+    updateTimeAgo(result.date);
+    loadedDate = date;
+
+    var imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+    localStorage.setItem(IMAGE_DATA_KEY, imageData);
+    localStorage.setItem(CACHED_DATE_KEY, date);
+  });
 }
 
+/* Asynchronously load latest image date and images for that date */
 function setLatestImages() {
+  if (!navigator.onLine) {
+    // browser is offline, no need to do this
+    return;
+  }
+
   getLatestDate(false, function(latest) {
     setImages(latest);
   });
 }
 
-// Refresh every 5 minutes
-window.setInterval(setLatestImages, 5*60*1000);
-setLatestImages();
+/** Load image from local storage */
+function setCachedImage() {
+  var canvas = document.getElementById("output");
+  var ctx = canvas.getContext("2d");
+  var date = new Date(localStorage.getItem(CACHED_DATE_KEY));
+
+  var img = new Image();
+  img.onload = function() {
+    ctx.canvas.width = img.width;
+    ctx.canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    updateTimeAgo(date);
+    loadedDate = date;
+  }
+  img.src = localStorage.getItem(IMAGE_DATA_KEY);
+}
+
+// check if there are new images form time to time
+window.setInterval(setLatestImages, RELOAD_INTERVAL);
+
+// also load a new image when we come back online
+window.addEventListener("online", setLatestImages);
+
+// initial loading
+if (localStorage.getItem(CACHED_DATE_KEY)) {
+  setCachedImage();
+  setLatestImages();
+} else {
+  setLatestImages();
+}
+
+// update the time ago every 20 seconds
+window.setInterval(function() {
+  if (loadedDate) {
+    updateTimeAgo(loadedDate);
+  }
+}, RELOAD_TIME_INTERVAL);
