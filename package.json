@@ -16,7 +16,8 @@
   "scripts": {
     "build": "rollup -c",
     "watch": "watch 'npm run build' src/",
-    "start": "python -m SimpleHTTPServer"
+    "start": "python -m SimpleHTTPServer",
+    "pack": "./pack.sh"
   },
   "repository": {
     "type": "git",
