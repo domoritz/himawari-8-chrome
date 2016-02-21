@@ -6,8 +6,9 @@ Experience the latest image from the [Himawari 8 satellite](https://en.wikipedia
 
 ![screenshot](https://domoritz.github.io/himawari-8-chrome/screenshot.png "Screenshot of the browser with the new tab page")
 
+[Himawari 8](http://himawari8.nict.go.jp/) is a [geostationary](https://en.wikipedia.org/wiki/Geostationary_orbit) weather satellite by the [Japan Meteorological Agency](http://www.jma.go.jp/jma/indexe.html). It takes photographs of Earth every 10 minutes.
 
-Inspired by https://github.com/jakiestfu/himawari.js/ and https://github.com/ngoldman/himawari-urls.
+This extension is inspired by https://github.com/jakiestfu/himawari.js/ and https://github.com/ngoldman/himawari-urls.
 
 ## Features
 
