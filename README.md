@@ -6,7 +6,7 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 
 ![screenshot](https://domoritz.github.io/himawari-8-chrome/screenshot.png "Screenshot of the browser with the new tab page")
 
-This extension is inspired by https://github.com/jakiestfu/himawari.js/ and https://github.com/ngoldman/himawari-urls.
+This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ngoldman/himawari-urls.
 
 ## Features
 
