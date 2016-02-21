@@ -178,6 +178,9 @@ function setImages(date) {
     return;
   }
 
+  // if we haven't loaded images before, we want to show progress
+  var initialLoad = !localStorage.getItem(CACHED_DATE_KEY);
+
   // get the URLs for all tiles
   var result = himawariURLs({
     date: date,
@@ -186,7 +189,7 @@ function setImages(date) {
 
   var pixels = result.blocks * WIDTH;
 
-  var canvas = document.createElement("canvas");
+  var canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
   var ctx = canvas.getContext("2d");
   ctx.canvas.width = pixels;
   ctx.canvas.height = pixels;
@@ -212,16 +215,19 @@ function setImages(date) {
   q.awaitAll(function(error) {
     if (error) throw error;
 
-    // copy canvas into output in one step
-    var output = document.getElementById("output");
-    var outCtx = output.getContext("2d")
-    outCtx.canvas.width = pixels;
-    outCtx.canvas.height = pixels;
-    outCtx.drawImage(canvas, 0, 0);
+    if (!initialLoad) {
+      // copy canvas into output in one step
+      var output = document.getElementById("output");
+      var outCtx = output.getContext("2d")
+      outCtx.canvas.width = pixels;
+      outCtx.canvas.height = pixels;
+      outCtx.drawImage(canvas, 0, 0);
+    }
 
     updateTimeAgo(result.date);
     loadedDate = date;
 
+    // put date and image data in cache
     var imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
     localStorage.setItem(CACHED_DATE_KEY, date);

@@ -22,6 +22,8 @@ Inspired by https://github.com/jakiestfu/himawari.js/ and https://github.com/ngo
 
 ## Planned features
 
+**Contributions welcome**
+
 * Automatically download a better image if the window is resized
 * Time travel
 * Actual logo/ icon
@@ -35,4 +37,4 @@ Have a look at the [latest image from Himawari 8](https://domoritz.github.io/him
 
 ## Develop
 
-Run `run.sh` and open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.
+Run `npm run watch` and `npm start` in two different terminals. Then open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.

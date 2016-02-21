@@ -1,6 +1,6 @@
 {
   "name": "himawari-chrome",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome.",
   "main": "index.js",
   "dependencies": {
@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "watch": "watch 'npm run build' src/"
+    "watch": "watch 'npm run build' src/",
+    "start": "python -m SimpleHTTPServer"
   },
   "repository": {
     "type": "git",
