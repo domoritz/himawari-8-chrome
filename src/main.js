@@ -138,7 +138,7 @@ function getLatestDate(infrared, cb) {
   var baseUrl = getBaseURL(infrared);
   var query = "select date from json where url=\"" + baseUrl + "/latest.json\"";
 
-  json("https://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json", function(data) {
+  json("https://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json&_maxage=60", function(data) {
       var latest = data.query.results.json.date;
       cb(resolveDate(latest + "Z"));
     });
