@@ -1,11 +1,11 @@
 {
   "name": "himawari-chrome",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome.",
   "main": "index.js",
   "dependencies": {
     "d3-queue": "^2.0.2",
-    "d3-request": "^0.4.3"
+    "d3-request": "^0.4.4"
   },
   "devDependencies": {
     "rollup": "^0.25.4",
