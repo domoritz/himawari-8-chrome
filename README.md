@@ -25,6 +25,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 * Automatically download a better image if the window is resized
 * Time travel
+* Support for infrared images
 * Actual logo/ icon
 * Error handling
 
