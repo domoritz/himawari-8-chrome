@@ -21,7 +21,7 @@ func init() {
 	http.HandleFunc("/", home)
 }
 
-const baseUrl = "http://himawari8-dl.nict.go.jp/himawari8/img/"
+const baseURL = "http://himawari8-dl.nict.go.jp/himawari8/img/"
 const infrared = "INFRARED_FULL"
 const visible = "D531106"
 
@@ -34,7 +34,7 @@ const timeout = 5 * time.Minute
 // get the data about the latest image
 func downloadLatest(ctx context.Context, useInfraredImage bool) ([]byte, error) {
 	var buffer bytes.Buffer
-	buffer.WriteString(baseUrl)
+	buffer.WriteString(baseURL)
 
 	if useInfraredImage {
 		buffer.WriteString(infrared)
@@ -166,5 +166,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the Himawari 8 JSON proxy. The API endpoint is at `/latest` and the only parameter is `infrared` (can be set to true).")
+	fmt.Fprintf(w, "Welcome to the Himawari-8 JSON proxy. The API endpoint is at `/latest` and the only parameter is `infrared` (can be set to true).")
 }
