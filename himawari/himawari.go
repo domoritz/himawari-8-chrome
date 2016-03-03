@@ -147,7 +147,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Infof(ctx, "item too old")
 		body, err := cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Errorf(ctx, "error synchronously getting data (data will be stale): %v", err)
+			fmt.Fprintf(w, string(items[dataKey].Value))
 			return
 		}
 
