@@ -14,6 +14,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 * Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads tiles.
 * Uses Google's caching to take the load from the image servers
 * Caches last version in local storage (compressed jpeg) and immediately displays it when you load the page. Then loads the latest image.
+* JSON proxy on AppEngine to get around same origin policy. The code is on the [proxy branch](https://github.com/domoritz/himawari-8-chrome/tree/proxy).
 * Full offline support
 * Images are drawn on a canvas so that we can cache and load it easily.
 * The earth always stay centered, thanks to CSS magic.
