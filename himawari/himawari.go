@@ -10,6 +10,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/delay"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/memcache"
 	"google.golang.org/appengine/urlfetch"
@@ -89,13 +90,13 @@ func cacheLatest(ctx context.Context, useInfraredImage bool, dataKey, timeKey st
 }
 
 // update the latest cached version and delete mutex
-func cacheLatestAsync(ctx context.Context, useInfraredImage bool, dataKey, timeKey, mutexKey string) {
+var cacheLatestAsync = delay.Func("cacheLatest", func(ctx context.Context, useInfraredImage bool, dataKey, timeKey, mutexKey string) {
 	cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
 
 	if err := memcache.Delete(ctx, mutexKey); err != nil {
 		log.Errorf(ctx, "error setting item: %v", err)
 	}
-}
+})
 
 // checks whether the time is within the timeout
 func isUpToDate(ctx context.Context, encodedTime []byte, timeout time.Duration) bool {
@@ -164,7 +165,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			if err := memcache.Set(ctx, mutexItem); err != nil {
 				log.Errorf(ctx, "error setting item: %v", err)
 			}
-			go cacheLatestAsync(ctx, useInfraredImage, dataKey, timeKey, mutexKey)
+			cacheLatestAsync.Call(ctx, useInfraredImage, dataKey, timeKey, mutexKey)
 		}
 	} else {
 		log.Infof(ctx, "item in the cache")
