@@ -24,7 +24,15 @@ body {
   font-family: 'Roboto Slab', serif;
   font-size: 15px;
   color: white;
+  opacity: 0.5;
+
+  transition: opacity 1.5s;
+}
+
+body:hover .overlay {
   opacity: 0.75;
+
+  transition: opacity 0.2s;
 }
 
 abbr {
@@ -44,6 +52,23 @@ abbr {
     height: 90vw;
     width: 90vw;
   }
+}
+
+#go-to-options {
+  fill: white;
+  cursor: pointer;
+  margin-left: 6px;
+  padding: 3px;
+  top: 6px;
+  position: relative;
+}
+
+.extension-only {
+  display: none;
+}
+
+.extension .extension-only {
+  display: initial;
 }
 
 /* Optional animation, not enabled */

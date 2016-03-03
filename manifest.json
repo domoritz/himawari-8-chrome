@@ -7,9 +7,18 @@
   "chrome_url_overrides" : {
     "newtab": "index.html"
   },
+  "permissions": [
+    "storage"
+  ],
+  "minimum_chrome_version": "42",
+  "offline_enabled": true,
   "icons": {
     "128": "icons/icon128.png",
     "48":"icons/icon48.png",
     "16":"icons/icon16.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
   }
 }

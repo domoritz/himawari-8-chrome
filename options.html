@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Himawari 8 New Tab Page Options</title>
+  <style type="text/css">
+    .control {
+      margin-top: 10px;
+    }
+    .top-links {
+      text-align: right;
+    }
+    .desc {
+      padding-top: 0.6em;
+      font-size: 0.9em;
+      font-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-links">
+    <a target="_blank" href="https://github.com/domoritz/himawari-8-chrome/">Website</a>
+    |
+    <a target="_blank" href="https://github.com/domoritz/himawari-8-chrome/issues/new">Send feedback</a>
+  </div>
+  <div>
+    <label for="image">Image type:</label>
+    <select id="image">
+      <option value="D531106">Visible Light</option>
+      <option value="INFRARED_FULL">Infrared</option>
+    </select>
+    <div class="desc">The Himawari 8 Satellite takes images of different parts of the spectrum. Here you can pick which image should be shown on the new tab page.</div>
+  </div>
+
+  <div class="control">
+    <button id="save">Save</button> <span id="status"></span>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

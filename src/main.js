@@ -12,6 +12,9 @@ var RELOAD_INTERVAL = 1*60*1000;  // 1 minutes
 var RELOAD_TIME_INTERVAL = 10*1000;  // 10 seconds
 var IMAGE_DATA_KEY = "imageData";
 var CACHED_DATE_KEY = "cachedDate";
+var CACHED_IMAGE_TYPE_KEY = "cachedImageType";
+
+var isChromeExtension = chrome && chrome.app.getDetails();
 
 /**
  * Returns an array of objects containing URLs and metadata
@@ -161,7 +164,8 @@ function getOptimalNumberOfBlocks() {
 }
 
 // the date that is currently loaded
-var loadedDate;
+var loadedDate = null;
+var loadedType = null;
 
 function updateTimeAgo(date) {
   var ago = (Date.now() - date.getTime()) / (1000 * 60);
@@ -172,8 +176,9 @@ function updateTimeAgo(date) {
  * Creates an image composed of tiles.
  * @param {Date object} date  The date for which to load the data.
  */
-function setImages(date) {
-  if (loadedDate && date.getTime() === loadedDate.getTime()) {
+function setImages(date, infrared) {
+  // no need to set images if we have up to date images and the image type has not changed
+  if (loadedDate && date.getTime() === loadedDate.getTime() &&  loadedType === (infrared ? INFRARED : VISIBLE_LIGHT)) {
     return;
   }
 
@@ -183,7 +188,8 @@ function setImages(date) {
   // get the URLs for all tiles
   var result = himawariURLs({
     date: date,
-    blocks: getOptimalNumberOfBlocks()
+    blocks: getOptimalNumberOfBlocks(),
+    infrared: infrared
   });
 
   var pixels = result.blocks * WIDTH;
@@ -225,11 +231,13 @@ function setImages(date) {
 
     updateTimeAgo(result.date);
     loadedDate = date;
+    loadedType = infrared ? INFRARED : VISIBLE_LIGHT;
 
     // put date and image data in cache
     var imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
     localStorage.setItem(CACHED_DATE_KEY, date);
+    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, infrared ? INFRARED : VISIBLE_LIGHT);
   });
 }
 
@@ -240,9 +248,23 @@ function setLatestImages() {
     return;
   }
 
-  getLatestDate(false, function(latest) {
-    setImages(latest);
-  });
+  function cb(infrared) {
+    getLatestDate(infrared, function(latest) {
+      setImages(latest, infrared);
+    });
+  }
+
+  if (isChromeExtension) {
+    chrome.storage.sync.get({
+      imageType: VISIBLE_LIGHT
+    }, function(items) {
+      var infrared = items.imageType === INFRARED;
+      cb(infrared);
+    });
+  } else {
+    // if we are not in the extension, let's always load non infrared
+    cb(false);
+  }
 }
 
 /** Load image from local storage */
@@ -259,6 +281,7 @@ function setCachedImage() {
 
     updateTimeAgo(date);
     loadedDate = date;
+    loadedType = localStorage.getItem(CACHED_IMAGE_TYPE_KEY);
   }
   img.src = localStorage.getItem(IMAGE_DATA_KEY);
 }
@@ -272,14 +295,20 @@ window.addEventListener("online", setLatestImages);
 // initial loading
 if (localStorage.getItem(CACHED_DATE_KEY)) {
   setCachedImage();
-  setLatestImages();
-} else {
-  setLatestImages();
 }
+setLatestImages();
 
-// update the time ago every 20 seconds
+// update the time ago
 window.setInterval(function() {
   if (loadedDate) {
     updateTimeAgo(loadedDate);
   }
 }, RELOAD_TIME_INTERVAL);
+
+// hide some things if we are not a chrome extension
+if (isChromeExtension) {
+  document.body.className += "extension";
+  document.getElementById("go-to-options").addEventListener("click", function() {
+    chrome.runtime.openOptionsPage();
+  });
+}
