@@ -8,7 +8,7 @@ var WIDTH = 550;
 var BLOCK_SIZES = [1, 4, 8, 16, 20];
 
 var IMAGE_QUALITY = 0.9;
-var RELOAD_INTERVAL = 2*60*1000;  // 2 minutes
+var RELOAD_INTERVAL = 1*60*1000;  // 1 minutes
 var RELOAD_TIME_INTERVAL = 10*1000;  // 10 seconds
 var IMAGE_DATA_KEY = "imageData";
 var CACHED_DATE_KEY = "cachedDate";
@@ -135,13 +135,12 @@ function pad(num, size) {
  * @returns {function}           callback function
  */
 function getLatestDate(infrared, cb) {
-  json("https://pah3rcptrc.execute-api.us-west-2.amazonaws.com/prod/himawari")
-    .post(JSON.stringify({type: infrared ? INFRARED : VISIBLE_LIGHT}),
-      function(error, data) {
-        if (error) throw error;
-        var latest = data.date;
-        cb(resolveDate(latest + "Z"));
-      });
+  json("https://himawari-8.appspot.com/latest" + (infrared ? "?infrared=true" : ""),
+    function(error, data) {
+      if (error) throw error;
+      var latest = data.date;
+      cb(resolveDate(latest + "Z"));
+    });
 }
 
 /**
