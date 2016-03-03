@@ -34,7 +34,6 @@ const timeout = 5 * time.Minute
 // get the data about the latest image
 func downloadLatest(ctx context.Context, useInfraredImage bool) ([]byte, error) {
 	var buffer bytes.Buffer
-
 	buffer.WriteString(baseUrl)
 
 	if useInfraredImage {
@@ -90,11 +89,14 @@ func cacheLatest(ctx context.Context, useInfraredImage bool, dataKey, timeKey st
 }
 
 // update the latest cached version and delete mutex
-var cacheLatestAsync = delay.Func("cacheLatest", func(ctx context.Context, useInfraredImage bool, dataKey, timeKey, mutexKey string) {
-	cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
+var cacheLatestAsync = delay.Func("cacheLatest", func(ctx context.Context, useInfraredImage bool, dataKey, timeKey string) {
+	if item, err := memcache.Get(ctx, timeKey); err == memcache.ErrCacheMiss || !isUpToDate(ctx, item.Value, timeoutUpdate) {
+		log.Infof(ctx, "start delayed update for key %s", dataKey)
 
-	if err := memcache.Delete(ctx, mutexKey); err != nil {
-		log.Errorf(ctx, "error setting item: %v", err)
+		_, err = cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
+		if err != nil {
+			log.Errorf(ctx, "error during update: %v", err)
+		}
 	}
 })
 
@@ -127,7 +129,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	dataKey := "data_" + imageKey
 	timeKey := "time_" + imageKey
-	mutexKey := "updating_" + imageKey
 
 	if items, err := memcache.GetMulti(ctx, []string{dataKey, timeKey}); err == memcache.ErrCacheMiss || items[dataKey] == nil || items[timeKey] == nil {
 		log.Infof(ctx, "item not in the cache")
@@ -156,17 +157,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, string(items[dataKey].Value))
 
 		// update asynchronously but only if we are not fetching right now
-		if _, err := memcache.Get(ctx, mutexKey); err == memcache.ErrCacheMiss {
-			mutexItem := &memcache.Item{
-				Key:        mutexKey,
-				Value:      []byte("true"),
-				Expiration: 10 * time.Second, // timeout after 10 seconds
-			}
-			if err := memcache.Set(ctx, mutexItem); err != nil {
-				log.Errorf(ctx, "error setting item: %v", err)
-			}
-			cacheLatestAsync.Call(ctx, useInfraredImage, dataKey, timeKey, mutexKey)
-		}
+		cacheLatestAsync.Call(ctx, useInfraredImage, dataKey, timeKey)
 	} else {
 		log.Infof(ctx, "item in the cache")
 		fmt.Fprintf(w, string(items[dataKey].Value))
