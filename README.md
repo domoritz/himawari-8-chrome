@@ -18,6 +18,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 * Full offline support
 * Images are drawn on a canvas so that we can cache and load it easily.
 * The earth always stay centered, thanks to CSS magic.
+* Switch between visible light and infrared images.
 
 
 ## Planned features
@@ -26,7 +27,6 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 * Automatically download a better image if the window is resized
 * Time travel
-* Support for infrared images
 * Actual logo/ icon
 * Error handling
 

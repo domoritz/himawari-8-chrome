@@ -3,7 +3,7 @@
   "name": "Himawari 8 New Tab Page",
   "short_name": "Himawari 8",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab.",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "chrome_url_overrides" : {
     "newtab": "index.html"
   },
