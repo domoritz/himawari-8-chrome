@@ -14,7 +14,7 @@ var IMAGE_DATA_KEY = "imageData";
 var CACHED_DATE_KEY = "cachedDate";
 var CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 
-var isChromeExtension = chrome && chrome.app.getDetails();
+var isChromeExtension = window.chrome && chrome.app.getDetails();
 
 /**
  * Returns an array of objects containing URLs and metadata
