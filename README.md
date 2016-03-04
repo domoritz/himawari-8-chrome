@@ -10,7 +10,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Features
 
-* Loads the latest image, updates automatically
+* Loads the latest image, updates automatically.
 * Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads tiles.
 * Uses Google's caching to take the load from the image servers
 * Caches last version in local storage (compressed jpeg) and immediately displays it when you load the page. Then loads the latest image.
