@@ -18,7 +18,7 @@
     "watch": "watch 'npm run build' src/",
     "start": "python -m SimpleHTTPServer",
     "prepack": "npm run build",
-    "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js Roboto_Slab/*.ttf manifest.json"
+    "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json"
   },
   "repository": {
     "type": "git",
