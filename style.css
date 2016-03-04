@@ -38,6 +38,9 @@ body:hover .overlay {
 abbr {
   cursor: help;
   border-bottom: 1px dashed;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 1.2em;
 }
 
 /* Always keep the earth centered */
