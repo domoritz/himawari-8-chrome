@@ -39,3 +39,5 @@ Have a look at the [latest image from Himawari 8](https://domoritz.github.io/him
 ## Develop
 
 Run `npm run watch` and `npm start` in two different terminals. Then open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.
+
+To make a release, run `npm run version patch` or `npm run version minor`. Then pack the extension, push the code and tags, and deploy on the chrome app store.
