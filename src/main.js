@@ -17,9 +17,7 @@ var DSCOVR_EPIC = "EPIC";
 var WIDTH = 550;
 var BLOCK_SIZES = [1, 4, 8, 16, 20];
 
-// the dscovr images have a lot of padding around them and it varies
-var DSCOVR_PADDING = 100;
-var DSCOVR_WIDTH = 2048 - 2 * DSCOVR_PADDING;
+var DSCOVR_WIDTH = 2048;
 
 var IMAGE_QUALITY = 0.9;
 var RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
@@ -36,8 +34,8 @@ var isChromeExtension = window.chrome && chrome.app.getDetails();
  * Returns an array of objects containing URLs and metadata
  * for Himawari 8 image tiles based on a given date.
  * Options:
- * - date: Date object or Date string (YYYY-MM-DD HH:MM:SSZ)
- * - infrared: boolean (optional)
+ * - date: Date object
+ * - type: boolean (default: visible light)
  * - zoom: number (default: 1)
  * - blocks: alternative to zoom, how many images per row/column (default: 1)
  *      Has to be a valid block number (1, 4, 8, 16, 20)
@@ -46,11 +44,8 @@ var isChromeExtension = window.chrome && chrome.app.getDetails();
  */
 function himawariURLs(options) {
   options = options || {};
-  var baseURL = getHimawariBaseURL(options.infrared);
-  var date = resolveDate(options.date);
-
-  // Normalize our date
-  date = normalizeDate(date);
+  var baseURL = HIMAWARI_BASE_URL + (options.type || VISIBLE_LIGHT);
+  var date = options.date;
 
   // Define some image parameters
   var blocks = options.blocks || (options.zoom ? BLOCK_SIZES[options.zoom - 1] : BLOCK_SIZES[0]);
@@ -83,32 +78,6 @@ function himawariURLs(options) {
     blocks: blocks,
     date: date
   };
-}
-
-/**
- * Returns base URL for Himawari-8 images
- * @param   {Boolean}   infrared  returns base URL for infrared images if true
- * @returns {String}              full base URL
- */
-function getHimawariBaseURL(infrared) {
-  var url = HIMAWARI_BASE_URL;
-  if (infrared) {
-    url += INFRARED;
-  } else {
-    url += VISIBLE_LIGHT;
-  }
-  return url;
-}
-
-/**
- * Takes a Date and normalizes it to ten minute intervals.
- * @param   {Date}  input   Date object
- * @returns {Date}          normalized Date object
- */
-function normalizeDate(date) {
-  date.setMinutes(date.getMinutes() - (date.getMinutes() % 10));
-  date.setSeconds(0);
-  return date;
 }
 
 /**
@@ -226,13 +195,36 @@ function updateTimeAgo(date) {
   document.getElementById("time").innerHTML = "<abbr title=\"" + date + "\">" + timeSince(date) + "</abbr> ago";
 }
 
+/*
+ * Set the right class on the body so that we can have different css.
+ */
+function setBodyClass(imageType) {
+  switch (imageType) {
+    case DSCOVR_EPIC:
+      document.body.classList.add("dscovr");
+      document.body.classList.remove("himawari");
+      break;
+    default:
+      document.body.classList.remove("dscovr");
+      document.body.classList.add("himawari");
+      break;
+  }
+}
+
+function updateStateAndUI(date, imageType) {
+  updateTimeAgo(date);
+  loadedDate = date;
+  setBodyClass(imageType);
+  loadedType = imageType;
+}
+
 /**
  * Creates an image composed of tiles.
  * @param {Date object} date  The date for which to load the data.
  */
-function setHimawariImages(date, infrared) {
+function setHimawariImages(date, imageType) {
   // no need to set images if we have up to date images and the image type has not changed
-  if (loadedDate && date.getTime() === loadedDate.getTime() && loadedType === (infrared ? INFRARED : VISIBLE_LIGHT)) {
+  if (loadedDate && date.getTime() === loadedDate.getTime() && loadedType === imageType) {
     return;
   }
 
@@ -241,15 +233,14 @@ function setHimawariImages(date, infrared) {
 
   // immediately set the type and body class beacuse we are not loading in the background
   if (initialLoad) {
-    loadedType = infrared ? INFRARED : VISIBLE_LIGHT;
-    setBodyClass();
+    updateStateAndUI(date, imageType)
   }
 
   // get the URLs for all tiles
   var result = himawariURLs({
     date: date,
     blocks: getOptimalNumberOfBlocks(),
-    infrared: infrared
+    type: imageType
   });
 
   var pixels = result.blocks * WIDTH;
@@ -289,16 +280,13 @@ function setHimawariImages(date, infrared) {
       outCtx.drawImage(canvas, 0, 0);
     }
 
-    updateTimeAgo(result.date);
-    loadedDate = date;
-    loadedType = infrared ? INFRARED : VISIBLE_LIGHT;
-    setBodyClass();
+    updateStateAndUI(date, imageType);
 
     // put date and image data in cache
     var imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
     localStorage.setItem(CACHED_DATE_KEY, date);
-    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, infrared ? INFRARED : VISIBLE_LIGHT);
+    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   });
 }
 
@@ -308,7 +296,15 @@ function setDscovrImage(latest) {
     return;
   }
 
-  var canvas = document.getElementById("output");
+  // if we haven't loaded images before, we want to show progress
+  var initialLoad = !localStorage.getItem(CACHED_DATE_KEY);
+
+  // immediately set the type and body class beacuse we are not loading in the background
+  if (initialLoad) {
+    updateStateAndUI(latest.date, DSCOVR_EPIC)
+  }
+
+  var canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
   var ctx = canvas.getContext("2d");
   ctx.canvas.width = DSCOVR_WIDTH;
   ctx.canvas.height = DSCOVR_WIDTH;
@@ -316,12 +312,18 @@ function setDscovrImage(latest) {
   var img = new Image();
   img.setAttribute("crossOrigin", "anonymous");
   img.onload = function () {
-    ctx.drawImage(img, -DSCOVR_PADDING, -DSCOVR_PADDING);
+    ctx.drawImage(img, 0, 0);
 
-    updateTimeAgo(latest.date);
-    loadedType = DSCOVR_EPIC;
+    if (!initialLoad) {
+      // copy canvas into output in one step
+      var output = document.getElementById("output");
+      var outCtx = output.getContext("2d")
+      outCtx.canvas.width = DSCOVR_WIDTH;
+      outCtx.canvas.height = DSCOVR_WIDTH;
+      outCtx.drawImage(canvas, 0, 0);
+    }
 
-    setBodyClass();
+    updateStateAndUI(latest.date, DSCOVR_EPIC)
 
     // put date and image data in cache
     var imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
@@ -332,22 +334,6 @@ function setDscovrImage(latest) {
   img.src = getCachedUrl(DSCOVR_BASE_URL + latest.image + '.png');
 }
 
-/*
- * Set the right class on the body so that we can have different css.
- */
-function setBodyClass() {
-  switch (loadedType) {
-    case DSCOVR_EPIC:
-      document.body.classList.add("dscovr");
-      document.body.classList.remove("himawari");
-      break;
-    default:
-      document.body.classList.remove("dscovr");
-      document.body.classList.add("himawari");
-      break;
-  }
-}
-
 /* Asynchronously load latest image(s) date and images for that date */
 function setLatestImage() {
   if (!navigator.onLine) {
@@ -355,9 +341,9 @@ function setLatestImage() {
     return;
   }
 
-  function himawariCallback(infrared) {
-    getLatestHimawariDate(infrared, function (latest) {
-      setHimawariImages(latest, infrared);
+  function himawariCallback(imageType) {
+    getLatestHimawariDate(imageType, function (latest) {
+      setHimawariImages(latest, imageType);
     });
   }
 
@@ -376,17 +362,15 @@ function setLatestImage() {
           dscovrCallback();
           break;
         case INFRARED:
-          himawariCallback(true);
-          break;
         case VISIBLE_LIGHT:
         default:
-          himawariCallback(false);
+          himawariCallback(items.imageType);
           break;
       }
     });
   } else {
-    // if we are not in the extension, let's always load non infrared
-    himawariCallback(false);
+    // if we are not in the extension, let's always load visible light
+    himawariCallback(VISIBLE_LIGHT);
   }
 }
 
@@ -402,10 +386,7 @@ function setCachedImage() {
     ctx.canvas.height = img.height;
     ctx.drawImage(img, 0, 0);
 
-    updateTimeAgo(date);
-    loadedDate = date;
-    loadedType = localStorage.getItem(CACHED_IMAGE_TYPE_KEY);
-    setBodyClass();
+    updateStateAndUI(date, localStorage.getItem(CACHED_IMAGE_TYPE_KEY));
   }
   img.src = localStorage.getItem(IMAGE_DATA_KEY);
 }

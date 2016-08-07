@@ -24,7 +24,7 @@ body {
   font-family: 'Roboto Slab', serif;
   font-size: 15px;
   color: white;
-  opacity: 0.5;
+  opacity: 0.4;
 
   transition: opacity 1.5s;
 }
