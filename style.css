@@ -45,25 +45,39 @@ abbr {
 
 /* Always keep the earth centered */
 @media (orientation:landscape) {
-  #output {
+  .himawari #output {
     height: 90vh;
     width: 90vh;
   }
+
+  .dscovr #output {
+    height: 100vh;
+    width: 100vh;
+  }
 }
 @media screen and (orientation:portrait) {
-  #output {
+  .himawari #output {
     height: 90vw;
     width: 90vw;
   }
+
+  .dscovr #output {
+    height: 100vw;
+    width: 100vw;
+  }
 }
 
-#go-to-options {
+.svg-icon {
   fill: white;
   cursor: pointer;
-  margin-left: 6px;
   padding: 3px;
   top: 6px;
   position: relative;
+}
+
+#explore {
+  margin-left: 8px;
+  top: 7px;
 }
 
 .extension-only {
