@@ -17,8 +17,8 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 * JSON proxy on AppEngine to get around same origin policy. The code is on the [proxy branch](https://github.com/domoritz/himawari-8-chrome/tree/proxy).
 * Full offline support
 * Images are drawn on a canvas so that we can cache and load it easily.
-* The earth always stay centered, thanks to CSS magic.
-* Switch between visible light and infrared images.
+* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/) and images from the EPIC camera on the or [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite (only in the extension).
+* The Earth always stay centered, thanks to CSS magic.
 
 
 ## Planned features
