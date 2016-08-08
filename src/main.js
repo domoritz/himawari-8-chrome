@@ -135,6 +135,7 @@ function getLatestDscovrImageUrlAndDate(cb) {
   json("http://epic.gsfc.nasa.gov/api/images.php",
     function (error, data) {
       if (error) throw error;
+      if (data.length === 0) return;
       var latest = data[data.length - 1];
       latest.date = resolveDate(latest.date + "Z")
       cb(latest);
