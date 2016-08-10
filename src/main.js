@@ -3,7 +3,7 @@ import {json} from 'd3-request';
 
 // base url for images
 var HIMAWARI_BASE_URL = "http://himawari8-dl.nict.go.jp/himawari8/img/";
-var DSCOVR_BASE_URL = "http://epic.gsfc.nasa.gov/epic-archive/png/";
+var DSCOVR_BASE_URL = "http://epic.gsfc.nasa.gov/epic-archive/natural/png/";
 
 // links to online image explorers
 var HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/";
