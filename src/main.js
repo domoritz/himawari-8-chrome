@@ -6,7 +6,7 @@ var HIMAWARI_BASE_URL = "http://himawari8-dl.nict.go.jp/himawari8/img/";
 var DSCOVR_BASE_URL = "http://epic.gsfc.nasa.gov/epic-archive/natural/png/";
 
 // links to online image explorers
-var HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/";
+var HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
 var DSCOVR_EXPLORER = "http://epic.gsfc.nasa.gov/";
 
 // image types
