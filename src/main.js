@@ -119,11 +119,11 @@ function pad(num, size) {
 
 /**
  * Get the date of the latest himawari image by making an Ajax request.
- * @param   {boolean}  infrared  gets the latest infrared image
+ * @param   {string}  imageType  The type of image
  * @returns {function}           callback function
  */
-function getLatestHimawariDate(infrared, cb) {
-  json("https://himawari-8.appspot.com/latest" + (infrared ? "?infrared=true" : ""),
+function getLatestHimawariDate(imageType, cb) {
+  json("https://himawari-8.appspot.com/latest" + (imageType === INFRARED ? "?infrared=true" : ""),
     function (error, data) {
       if (error) throw error;
       var latest = data.date;
