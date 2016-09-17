@@ -13,6 +13,10 @@ This is a Google AppEngine application running at https://himawari-8.appspot.com
 
 Install AppEngine for golang and then run `goapp serve`.
 
+## Deploy
+
+Run `goapp deploy`.
+
 ## Try
 
 Get latest true color data: https://himawari-8.appspot.com/latest
