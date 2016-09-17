@@ -9,6 +9,9 @@ This is a Google AppEngine application running at https://himawari-8.appspot.com
 * Asynchronously updates the entries in memcache
 * Fault tolerant in that it returns stale data if the server cannot be reached
 
+## Run
+
+Install AppEngine for golang and then run `goapp serve`.
 
 ## Try
 
