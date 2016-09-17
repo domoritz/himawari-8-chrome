@@ -8,7 +8,7 @@
     "d3-request": "^1.0.2"
   },
   "devDependencies": {
-    "rollup": "^0.34.7",
+    "rollup": "^0.35.11",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-uglify": "^1.0.1",
     "watch": "^0.19.1"
