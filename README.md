@@ -6,7 +6,7 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 
 ![screenshot](https://domoritz.github.io/himawari-8-chrome/screenshot.png "Screenshot of the browser with the new tab page")
 
-This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ngoldman/himawari-urls.
+This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ungoldman/himawari-urls.
 
 ## Features
 
@@ -38,6 +38,6 @@ Have a look at the [latest image from Himawari 8](https://domoritz.github.io/him
 
 ## Develop
 
-Run `npm run watch` and `npm start` in two different terminals. Then open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.
+Run `npm run dev` then open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.
 
 To make a release, update the version number in `package.json` and `manifest.json`. Then commit the changes and tag it. Lastly, pack the extension, push the code and tags, and deploy on the chrome app store.
