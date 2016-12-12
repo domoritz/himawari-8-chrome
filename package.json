@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "npm-run-all": "^3.1.1",
-    "rollup": "^0.36.3",
+    "rollup": "^0.37.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-uglify": "^1.0.1",
     "watch": "^1.0.1"
