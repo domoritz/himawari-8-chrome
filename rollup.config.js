@@ -1,4 +1,3 @@
-import { rollup } from 'rollup';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import uglify from 'rollup-plugin-uglify';
 
