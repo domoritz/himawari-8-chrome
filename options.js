@@ -1,5 +1,3 @@
-console.log("foo")
-
 // Saves options to chrome.storage.sync.
 function save_options() {
   var imageType = document.getElementById('image').value;
