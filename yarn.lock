@@ -435,8 +435,8 @@ babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.21
     to-fast-properties "^1.0.1"
 
 babylon@^6.11.0:
-  version "6.14.1"
-  resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.14.1.tgz#956275fab72753ad9b3435d7afe58f8bf0a29815"
+  version "6.15.0"
+  resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.15.0.tgz#ba65cfa1a80e1759b0e89fb562e27dccae70348e"
 
 balanced-match@^0.4.1:
   version "0.4.2"
@@ -983,9 +983,9 @@ rollup-pluginutils@^1.5.0:
     estree-walker "^0.2.1"
     minimatch "^3.0.2"
 
-rollup@^0.39.2:
-  version "0.39.2"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.39.2.tgz#858cf3020027cf74e0c5d7faa1c18275faf00df4"
+rollup@^0.41.1:
+  version "0.41.1"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.41.1.tgz#5be8192c196c35977551e52ec0c98c3f83280525"
   dependencies:
     source-map-support "^0.4.0"
 
