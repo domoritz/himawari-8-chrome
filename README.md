@@ -1,6 +1,6 @@
 # Himawari 8 New Tab Page
 
-Experience the latest image taken by the [geostationary](https://en.wikipedia.org/wiki/Geostationary_orbit) [Himawari 8 satellite](http://himawari8.nict.go.jp/) every time you open a new tab in Chrome. The satellite has been deployed by the [Japan Meteorological Agency](http://www.jma.go.jp/jma/indexe.html) and takes photographs of Earth every 10 minutes. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
+Experience the latest image taken by the [geostationary](https://en.wikipedia.org/wiki/Geostationary_orbit) [Himawari 8 satellite](http://himawari8.nict.go.jp/) every time you open a new tab in Chrome. The himawari satellite has been deployed by the [Japan Meteorological Agency](http://www.jma.go.jp/jma/indexe.html) and takes photographs of Earth every 10 minutes. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
 
 🛰 Get the extension from the [Chrome web store](https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm).
 
@@ -8,8 +8,9 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 
 This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ungoldman/himawari-urls.
 
-## Features
+## Features of the extension
 
+* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/) and images from the EPIC camera on the or [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite (only in the extension).
 * Loads the latest image, updates automatically.
 * Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads tiles.
 * Uses Google's caching to take the load from the image servers
@@ -17,7 +18,6 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 * JSON proxy on AppEngine to get around same origin policy. The code is on the [proxy branch](https://github.com/domoritz/himawari-8-chrome/tree/proxy).
 * Full offline support
 * Images are drawn on a canvas so that we can cache and load it easily.
-* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/) and images from the EPIC camera on the or [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite (only in the extension).
 * The Earth always stay centered, thanks to CSS magic.
 
 
