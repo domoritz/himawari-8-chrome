@@ -54,6 +54,11 @@ abbr {
     height: 100vh;
     width: 100vh;
   }
+
+  .geos #output {
+    height: 100vh;
+    width: 100vh;
+  }
 }
 @media screen and (orientation:portrait) {
   .himawari #output {
@@ -62,6 +67,11 @@ abbr {
   }
 
   .dscovr #output {
+    height: 100vw;
+    width: 100vw;
+  }
+
+  .geos #output {
     height: 100vw;
     width: 100vw;
   }
@@ -78,6 +88,10 @@ abbr {
 #explore {
   margin-left: 8px;
   top: 7px;
+}
+
+.geos #explore, .geos #time {
+  display: none;
 }
 
 .extension-only {

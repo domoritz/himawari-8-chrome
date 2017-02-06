@@ -5,6 +5,9 @@ import {json} from 'd3-request';
 const HIMAWARI_BASE_URL = "http://himawari8-dl.nict.go.jp/himawari8/img/";
 const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/archive/";
 
+const GEOS_EAST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeseast/overview2/color_lrg/latestfull.jpg";
+const GEOS_WEST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeswest/overview2/color_lrg/latestfull.jpg";
+
 // links to online image explorers
 const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
 const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
@@ -15,11 +18,14 @@ const INFRARED = "INFRARED_FULL";
 const VISIBLE_LIGHT = "D531106";
 const DSCOVR_EPIC = "EPIC";
 const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
+const GEOS_EAST = "GEOS_EAST";  // GEOS 13
+const GEOS_WEST = "GEOS_WEST";  // GEOS 15
 
 const WIDTH = 550;
 const BLOCK_SIZES = [1, 4, 8, 16, 20];
 
 const DSCOVR_WIDTH = 2048;
+const GEOS_WIDTH = 3072;
 
 const IMAGE_QUALITY = 0.9;
 const RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
@@ -29,6 +35,9 @@ const RELOAD_TIME_INTERVAL = 10 * 1000;  // 10 seconds
 const IMAGE_DATA_KEY = "imageData";
 const CACHED_DATE_KEY = "cachedDate";
 const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
+
+// unknown date
+const UNKNOWN = 'unknown';
 
 const isChromeExtension = window.chrome && chrome.app.getDetails();
 
@@ -195,23 +204,36 @@ function timeSince(date) {
 }
 
 function updateTimeAgo(date) {
-  document.getElementById("time").innerHTML = "<abbr title=\"" + date + "\">" + timeSince(date) + "</abbr> ago";
+  if (date === UNKNOWN) {
+    document.getElementById("time").innerHTML = "";
+  } else {
+    document.getElementById("time").innerHTML = "<abbr title=\"" + date + "\">" + timeSince(date) + "</abbr> ago";
+  }
 }
 
 /*
  * Set the right class on the body so that we can have different css.
  */
 function setBodyClass(imageType) {
+  document.body.classList.remove("himawari");
+  document.body.classList.remove("dscovr");
+  document.body.classList.remove("geos");
+
   switch (imageType) {
+    case INFRARED:
+    case VISIBLE_LIGHT:
+      document.body.classList.add("himawari");
+      break;
     case DSCOVR_EPIC:
     case DSCOVR_EPIC_ENHANCED:
       document.body.classList.add("dscovr");
-      document.body.classList.remove("himawari");
+      break;
+    case GEOS_EAST:
+    case GEOS_WEST:
+      document.body.classList.add("geos");
       break;
     default:
-      document.body.classList.remove("dscovr");
-      document.body.classList.add("himawari");
-      break;
+      console.warn("Unknown image type", imageType)
   }
 }
 
@@ -336,7 +358,50 @@ function setDscovrImage(latest, imageType) {
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   }
   const type = imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural";
-  img.src = getCachedUrl(`${DSCOVR_BASE_URL}${type}/${latest.date.getFullYear()}/${latest.date.getMonth() + 1}/${latest.date.getDate()}/png/${latest.image}.png`);
+  const month = pad(latest.date.getMonth() + 1, 2);
+  const date = pad(latest.date.getDate(), 2);
+  img.src = getCachedUrl(`${DSCOVR_BASE_URL}${type}/${latest.date.getFullYear()}/${month}/${date}/png/${latest.image}.png`);
+}
+
+function setGeosImage(imageType) {
+  // if we haven't loaded images before, we want to show progress
+  const key = localStorage.getItem(CACHED_IMAGE_TYPE_KEY);
+  const initialLoad = !key || (key !== GEOS_EAST && key !== GEOS_WEST);
+
+  // immediately set the type and body class beacuse we are not loading in the background
+  if (initialLoad) {
+    updateStateAndUI(UNKNOWN, imageType)
+  }
+
+  const canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.canvas.width = GEOS_WIDTH;
+  ctx.canvas.height = GEOS_WIDTH;
+
+  const img = new Image();
+  img.setAttribute("crossOrigin", "anonymous");
+  img.onload = function () {
+    ctx.drawImage(img, 0, 0);
+
+    if (!initialLoad) {
+      // copy canvas into output in one step
+      const output = document.getElementById("output");
+      const outCtx = output.getContext("2d")
+      outCtx.canvas.width = GEOS_WIDTH;
+      outCtx.canvas.height = GEOS_WIDTH;
+      outCtx.drawImage(canvas, 0, 0);
+    }
+
+    updateStateAndUI(UNKNOWN, imageType)
+
+    // put date and image data in cache
+    const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+    localStorage.setItem(IMAGE_DATA_KEY, imageData);
+    localStorage.setItem(CACHED_DATE_KEY, UNKNOWN);
+    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
+  }
+
+  img.src = getCachedUrl(imageType === GEOS_WEST ? GEOS_WEST_URL : GEOS_EAST_URL);
 }
 
 /* Asynchronously load latest image(s) date and images for that date */
@@ -358,6 +423,10 @@ function setLatestImage() {
     });
   }
 
+  function geosCallback(imageType) {
+    setGeosImage(imageType);
+  }
+
   if (isChromeExtension) {
     chrome.storage.sync.get({
       imageType: VISIBLE_LIGHT
@@ -371,6 +440,10 @@ function setLatestImage() {
         case VISIBLE_LIGHT:
         default:
           himawariCallback(items.imageType);
+          break;
+        case GEOS_EAST:
+        case GEOS_WEST:
+          geosCallback(items.imageType);
           break;
       }
     });

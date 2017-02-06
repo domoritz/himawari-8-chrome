@@ -14,6 +14,11 @@
       font-size: 0.9em;
       color: #444;
     }
+
+    .desc p {
+      margin-top: 0;
+      margin-bottom: 0.5em;
+    }
   </style>
 </head>
 <body>
@@ -29,15 +34,25 @@
       <option value="INFRARED_FULL">Himawari Infrared</option>
       <option value="EPIC">DSCOVR EPIC</option>
       <option value="EPIC_ENHANCED">DSCOVR EPIC enhanced</option>
+      <option value="GEOS_EAST">GEOS 13 (East)</option>
+      <option value="GEOS_WEST">GEOS 15 (West)</option>
     </select>
     <div class="desc">
-      Here you can choose the image source. The
-      <a href="https://en.wikipedia.org/wiki/Himawari_8">Japanese Himawari 8 Satellite</a>
-      takes images of different parts of the spectrum (visible light and infrared).
-      Himawari offers the best image quality but the satellite is
-      geo stationary. You can also choose images from the NASA's
-      <a href="https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory#EPIC">EPIC camera on board of the DSCOVR satellite</a>.
-      This satellite always faces the sunlit sunlit side of the Earth.
+      <p>
+        Here you can choose the image source.
+      </p><p>
+        The <a href="https://en.wikipedia.org/wiki/Himawari_8">Japanese Himawari 8 Satellite</a>
+        takes images of different parts of the spectrum (visible light and infrared).
+        Himawari offers the best image quality but the satellite is
+        geo stationary.
+      </p><p>
+        You can also choose images from the NASA's
+        <a href="https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory#EPIC">EPIC camera on board of the DSCOVR satellite</a>.
+        This satellite always faces the sunlit sunlit side of the Earth.
+      </p><p>
+        The <a href="https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite">NOAA GEOS</a> satellites are geo stationary
+        just like himawari but show the pacific (GEOS West) and the Americas (GEOS East).
+      </p>
     </div>
   </div>
 
