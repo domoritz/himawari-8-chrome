@@ -401,7 +401,7 @@ function setGeosImage(imageType) {
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   }
 
-  img.src = getCachedUrl(imageType === GEOS_WEST ? GEOS_WEST_URL : GEOS_EAST_URL);
+  img.src = imageType === GEOS_WEST ? GEOS_WEST_URL : GEOS_EAST_URL;
 }
 
 /* Asynchronously load latest image(s) date and images for that date */
