@@ -55,7 +55,7 @@ abbr {
     width: 100vh;
   }
 
-  .geos #output {
+  .goes #output {
     height: 100vh;
     width: 100vh;
   }
@@ -71,7 +71,7 @@ abbr {
     width: 100vw;
   }
 
-  .geos #output {
+  .goes #output {
     height: 100vw;
     width: 100vw;
   }
@@ -90,7 +90,7 @@ abbr {
   top: 7px;
 }
 
-.geos #explore, .geos #time {
+.goes #explore, .goes #time {
   display: none;
 }
 
