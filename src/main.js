@@ -2,7 +2,7 @@ import {queue} from 'd3-queue';
 import {json} from 'd3-request';
 
 // base url for images
-const HIMAWARI_BASE_URL = "http://himawari8-dl.nict.go.jp/himawari8/img/";
+const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
 const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/archive/";
 
 const GOES_EAST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeseast/overview2/color_lrg/latestfull.jpg";
