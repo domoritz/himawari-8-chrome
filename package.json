@@ -4,7 +4,7 @@
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome.",
   "main": "index.js",
   "dependencies": {
-    "d3-queue": "^3.0.5",
+    "d3-queue": "^3.0.7",
     "d3-request": "^1.0.5"
   },
   "devDependencies": {
@@ -14,7 +14,7 @@
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-uglify": "^1.0.2",
+    "rollup-plugin-uglify": "^2.0.1",
     "watch": "^1.0.2"
   },
   "scripts": {
