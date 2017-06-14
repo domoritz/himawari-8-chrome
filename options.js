@@ -1,7 +1,9 @@
-// Saves options to chrome.storage.local.
+var storage = window.browser ? browser.storage.local : chrome.storage.sync;
+
+// Saves options to storage.
 function saveOptions() {
   var imageType = document.getElementById('image').value;
-  chrome.storage.local.set({
+  storage.set({
     imageType: imageType
   }, function() {
     // Update status to let user know options were saved.
@@ -17,7 +19,7 @@ function saveOptions() {
 // stored in chrome.storage.
 function restoreOptions() {
   // Use default value color = 'red' and likesColor = true.
-  chrome.storage.local.get({
+  storage.get({
     imageType: 'D531106'
   }, function(items) {
     document.getElementById('image').value = items.imageType;

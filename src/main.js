@@ -37,9 +37,12 @@ const CACHED_DATE_KEY = "cachedDate";
 const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 
 // unknown date
-const UNKNOWN = 'unknown';
+const UNKNOWN = null;
 
-const isChromeExtension = window.chrome && !!window.chrome.storage;
+const isExtension = window.chrome && !!window.chrome.storage;
+
+// Firefox does not work well with sync storage
+const storage = window.browser ? browser.storage.local : chrome.storage.sync;
 
 /**
  * Returns an array of objects containing URLs and metadata
@@ -61,7 +64,7 @@ function himawariURLs(options) {
   // Define some image parameters
   const blocks = options.blocks || (options.zoom ? BLOCK_SIZES[options.zoom - 1] : BLOCK_SIZES[0]);
   const level = blocks + 'd';
-  const time = [date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()].map(function (s) { return pad(s, 2) }).join("");
+  const time = [date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()].map(function (s) { return pad(s, 2); }).join("");
   const year = date.getUTCFullYear();
   const month = pad(date.getUTCMonth() + 1, 2);
   const day = pad(date.getUTCDate(), 2);
@@ -148,7 +151,7 @@ function getLatestDscovrDate(imageType, cb) {
       if (error) throw error;
       if (data.length === 0) return;
       const latest = data[data.length - 1];
-      latest.date = resolveDate(latest.date + "Z")
+      latest.date = resolveDate(latest.date + "Z");
       cb(latest);
     });
 }
@@ -166,8 +169,6 @@ function getOptimalNumberOfBlocks() {
       return l;
     }
   }
-
-  console.log(height)
 
   return BLOCK_SIZES[BLOCK_SIZES.length - 1];
 }
@@ -233,7 +234,7 @@ function setBodyClass(imageType) {
       document.body.classList.add("goes");
       break;
     default:
-      console.warn("Unknown image type", imageType)
+      console.warn("Unknown image type", imageType);
   }
 }
 
@@ -259,7 +260,7 @@ function setHimawariImages(date, imageType) {
 
   // immediately set the type and body class beacuse we are not loading in the background
   if (initialLoad) {
-    updateStateAndUI(date, imageType)
+    updateStateAndUI(date, imageType);
   }
 
   // get the URLs for all tiles
@@ -285,7 +286,7 @@ function setHimawariImages(date, imageType) {
     img.onload = function () {
       ctx.drawImage(img, tile.x * WIDTH, tile.y * WIDTH, WIDTH, WIDTH);
       callback();
-    }
+    };
     img.src = tile.url;
   }
 
@@ -300,7 +301,7 @@ function setHimawariImages(date, imageType) {
     if (!initialLoad) {
       // copy canvas into output in one step
       const output = document.getElementById("output");
-      const outCtx = output.getContext("2d")
+      const outCtx = output.getContext("2d");
       outCtx.canvas.width = pixels;
       outCtx.canvas.height = pixels;
       outCtx.drawImage(canvas, 0, 0);
@@ -327,7 +328,7 @@ function setDscovrImage(latest, imageType) {
 
   // immediately set the type and body class beacuse we are not loading in the background
   if (initialLoad) {
-    updateStateAndUI(latest.date, imageType)
+    updateStateAndUI(latest.date, imageType);
   }
 
   const canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
@@ -343,20 +344,20 @@ function setDscovrImage(latest, imageType) {
     if (!initialLoad) {
       // copy canvas into output in one step
       const output = document.getElementById("output");
-      const outCtx = output.getContext("2d")
+      const outCtx = output.getContext("2d");
       outCtx.canvas.width = DSCOVR_WIDTH;
       outCtx.canvas.height = DSCOVR_WIDTH;
       outCtx.drawImage(canvas, 0, 0);
     }
 
-    updateStateAndUI(latest.date, imageType)
+    updateStateAndUI(latest.date, imageType);
 
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
     localStorage.setItem(CACHED_DATE_KEY, latest.date);
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
-  }
+  };
   const type = imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural";
   const month = pad(latest.date.getMonth() + 1, 2);
   const date = pad(latest.date.getDate(), 2);
@@ -370,7 +371,7 @@ function setGoesImage(imageType) {
 
   // immediately set the type and body class beacuse we are not loading in the background
   if (initialLoad) {
-    updateStateAndUI(UNKNOWN, imageType)
+    updateStateAndUI(UNKNOWN, imageType);
   }
 
   const canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
@@ -386,20 +387,20 @@ function setGoesImage(imageType) {
     if (!initialLoad) {
       // copy canvas into output in one step
       const output = document.getElementById("output");
-      const outCtx = output.getContext("2d")
+      const outCtx = output.getContext("2d");
       outCtx.canvas.width = GOES_WIDTH;
       outCtx.canvas.height = GOES_WIDTH;
       outCtx.drawImage(canvas, 0, 0);
     }
 
-    updateStateAndUI(UNKNOWN, imageType)
+    updateStateAndUI(UNKNOWN, imageType);
 
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
     localStorage.setItem(CACHED_DATE_KEY, UNKNOWN);
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
-  }
+  };
 
   img.src = getCachedUrl(imageType === GOES_WEST ? GOES_WEST_URL : GOES_EAST_URL, 60*60);
 }
@@ -427,8 +428,8 @@ function setLatestImage() {
     setGoesImage(imageType);
   }
 
-  if (isChromeExtension) {
-    chrome.storage.local.get({
+  if (isExtension) {
+    storage.get({
       imageType: VISIBLE_LIGHT
     }, function (items) {
       switch (items.imageType) {
@@ -466,7 +467,7 @@ function setCachedImage() {
     ctx.drawImage(img, 0, 0);
 
     updateStateAndUI(date, localStorage.getItem(CACHED_IMAGE_TYPE_KEY));
-  }
+  };
   img.src = localStorage.getItem(IMAGE_DATA_KEY);
 }
 
@@ -490,7 +491,10 @@ window.setInterval(function () {
 }, RELOAD_TIME_INTERVAL);
 
 // hide some things if we are not a chrome extension
-if (isChromeExtension) {
+if (isExtension) {
+  // when we are in an extension and the storage updates, try to load the new image
+  chrome.storage.onChanged.addListener(setLatestImage);
+
   document.body.classList.add("extension");
   document.getElementById("go-to-options").addEventListener("click", function () {
     chrome.runtime.openOptionsPage();
