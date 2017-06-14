@@ -39,7 +39,7 @@ const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 // unknown date
 const UNKNOWN = 'unknown';
 
-const isChromeExtension = window.chrome && chrome.app.getDetails();
+const isChromeExtension = window.chrome && !!window.chrome.storage;
 
 /**
  * Returns an array of objects containing URLs and metadata
@@ -428,7 +428,7 @@ function setLatestImage() {
   }
 
   if (isChromeExtension) {
-    chrome.storage.sync.get({
+    chrome.storage.local.get({
       imageType: VISIBLE_LIGHT
     }, function (items) {
       switch (items.imageType) {
@@ -436,14 +436,14 @@ function setLatestImage() {
         case DSCOVR_EPIC_ENHANCED:
           dscovrCallback(items.imageType);
           break;
+        case GOES_EAST:
+        case GOES_WEST:
+          goesCallback(items.imageType);
+          break;
         case INFRARED:
         case VISIBLE_LIGHT:
         default:
           himawariCallback(items.imageType);
-          break;
-        case GOES_EAST:
-        case GOES_WEST:
-          goesCallback(items.imageType);
           break;
       }
     });
