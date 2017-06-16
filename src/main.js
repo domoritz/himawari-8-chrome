@@ -41,9 +41,6 @@ const UNKNOWN = null;
 
 const isExtension = window.chrome && !!window.chrome.storage;
 
-// Firefox does not work well with sync storage
-const storage = window.browser ? browser.storage.local : chrome.storage.sync;
-
 /**
  * Returns an array of objects containing URLs and metadata
  * for Himawari 8 image tiles based on a given date.
@@ -429,6 +426,9 @@ function setLatestImage() {
   }
 
   if (isExtension) {
+    // Firefox does not work well with sync storage
+    const storage = window.browser ? browser.storage.local : chrome.storage.sync;
+
     storage.get({
       imageType: VISIBLE_LIGHT
     }, function (items) {
