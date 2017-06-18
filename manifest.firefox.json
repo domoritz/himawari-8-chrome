@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "Himawari 8 Satellite New Tab Page",
+  "short_name": "Himawari 8",
+  "description": "Experience the latest image of Earth from the Himawari 8 satellite every time you open a new tab.",
+  "version": "0.9.1",
+  "homepage_url": "https://github.com/domoritz/himawari-8-chrome",
+  "applications": {
+    "gecko": {
+      "strict_min_version": "54.0"
+    }
+  },
+  "chrome_url_overrides" : {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "offline_enabled": true,
+  "icons": {
+    "128": "icons/icon128.png",
+    "48":"icons/icon48.png",
+    "16":"icons/icon16.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  }
+}
