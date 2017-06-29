@@ -426,12 +426,11 @@ function setLatestImage() {
   }
 
   if (isExtension) {
-    // Firefox does not work well with sync storage
-    const storage = window.browser ? browser.storage.local : chrome.storage.sync;
-
-    storage.get({
+    const query = {
       imageType: VISIBLE_LIGHT
-    }, function (items) {
+    };
+
+    function callback(items) {
       switch (items.imageType) {
         case DSCOVR_EPIC:
         case DSCOVR_EPIC_ENHANCED:
@@ -447,7 +446,15 @@ function setLatestImage() {
           himawariCallback(items.imageType);
           break;
       }
-    });
+    }
+
+    if (window.browser) {
+      // Firefox uses a promise based API.
+      browser.storage.sync.get(query).then(callback);
+    } else {
+      // Chrome uses callbacks.
+      chrome.storage.sync.get(query, callback);
+    };
   } else {
     // if we are not in the extension, let's always load visible light
     himawariCallback(VISIBLE_LIGHT);
@@ -490,7 +497,7 @@ window.setInterval(function () {
   }
 }, RELOAD_TIME_INTERVAL);
 
-// hide some things if we are not a chrome extension
+// hide some things if we are not an extension
 if (isExtension) {
   // when we are in an extension and the storage updates, try to load the new image
   chrome.storage.onChanged.addListener(setLatestImage);

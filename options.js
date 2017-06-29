@@ -1,29 +1,41 @@
-var storage = window.browser ? browser.storage.local : chrome.storage.sync;
-
 // Saves options to storage.
 function saveOptions() {
-  var imageType = document.getElementById('image').value;
-  storage.set({
-    imageType: imageType
-  }, function() {
+  var query = {
+    imageType: document.getElementById('image').value
+  };
+  function callback() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
     status.textContent = 'Options saved.';
     setTimeout(function() {
       status.textContent = '';
-    }, 750);
-  });
+    }, 1000);
+  }
+
+  if (window.browser) {
+    // Firefox uses a promise based API.
+    browser.storage.sync.set(query).then(callback);
+  } else {
+    // Chrome uses callbacks.
+    chrome.storage.sync.set(query, callback);
+  }
 }
 
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restoreOptions() {
-  // Use default value color = 'red' and likesColor = true.
-  storage.get({
-    imageType: 'D531106'
-  }, function(items) {
+  var query = {imageType: 'D531106'};
+  function callback(items) {
     document.getElementById('image').value = items.imageType;
-  });
+  }
+
+  if (window.browser) {
+    // Firefox uses a promise based API.
+    browser.storage.sync.get(query).then(callback);
+  } else {
+    // Chrome uses callbacks.
+    chrome.storage.sync.get(query, callback);
+  };
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
