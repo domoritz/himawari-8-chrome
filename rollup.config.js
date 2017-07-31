@@ -1,9 +1,9 @@
 import nodeResolve from 'rollup-plugin-node-resolve';
+import typescript from 'rollup-plugin-typescript2';
 import uglify from 'rollup-plugin-uglify';
-import babel from 'rollup-plugin-babel';
 
 export default {
-  entry: 'src/main.js',
+  entry: 'src/main.ts',
   format: 'iife',
   dest: 'bundle.js',
   sourceMap: true,
@@ -12,8 +12,8 @@ export default {
       jsnext: true,
       main: true
     }),
-    babel({
-      exclude: 'node_modules/**'
+    typescript({
+      tsconfig: "tsconfig.json"
     }),
     uglify()
   ]

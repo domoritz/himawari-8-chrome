@@ -21,6 +21,8 @@ const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
 const GOES_EAST = "GOES_EAST";  // GOES 13
 const GOES_WEST = "GOES_WEST";  // GOES 15
 
+type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC | typeof DSCOVR_EPIC_ENHANCED | typeof GOES_EAST | typeof GOES_WEST;
+
 const WIDTH = 550;
 const BLOCK_SIZES = [1, 4, 8, 16, 20];
 
@@ -37,9 +39,16 @@ const CACHED_DATE_KEY = "cachedDate";
 const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 
 // unknown date
-const UNKNOWN = null;
+const UNKNOWN: Date = null;
 
-const isExtension = window.chrome && !!window.chrome.storage;
+const isExtension = window['chrome'] && !!window['chrome'].storage;
+
+interface Tile {
+  x: number,
+  y: number,
+  url: string,
+  name: string
+}
 
 /**
  * Returns an array of objects containing URLs and metadata
@@ -53,8 +62,7 @@ const isExtension = window.chrome && !!window.chrome.storage;
  *
  * @param  {Object}       options
  */
-function himawariURLs(options) {
-  options = options || {};
+function himawariURLs(options: {date: Date, type?: ImageType, zoom?: number, blocks?: number}) {
   const baseURL = HIMAWARI_BASE_URL + (options.type || VISIBLE_LIGHT);
   const date = options.date;
 
@@ -68,7 +76,7 @@ function himawariURLs(options) {
 
   // compose URL
   const tilesURL = [baseURL, level, WIDTH, year, month, day, time].join("/");
-  const tiles = [];
+  const tiles: Tile[] = [];
 
   for (let y = 0; y < blocks; y++) {
     for (let x = 0; x < blocks; x++) {
@@ -96,11 +104,11 @@ function himawariURLs(options) {
  * @param   {string | Date} date  Date as string or date object
  * @returns {Date}                Date object
  */
-function resolveDate(date) {
+function resolveDate(date: string | Date) {
   if (typeof date === "string") {
     // Don't use Date.parse because it doesn't work with YYYY-MM-DD HH:MM:SSZ
     const parts = date.match(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})Z/);
-    parts[2] -= 1; //months are zero-based
+    parts[2] = String(+parts[2] - 1); // months are zero-based
     return new Date(Date.UTC.apply(this, parts.slice(1)));
   } else {
     return date;
@@ -110,17 +118,17 @@ function resolveDate(date) {
 /**
  * Create a cached URL thanks to our friends at Google.
  * See https://gist.github.com/carlo/5379498
+ *
+ * Default caching is 5 days, in seconds
  */
-function getCachedUrl(url, timeout) {
-  // 5 days caching, in seconds
-  const cache = timeout || 5 * 24 * 60 * 60;
+function getCachedUrl(url: string, cache = 5 * 24 * 60 * 60) {
   return `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=${url}&container=focus&refresh=${cache}`;
 }
 
 /**
  * Pads a number with trailing zeros and makes it a string.
  */
-function pad(num, size) {
+function pad(num: string | number, size: number) {
   let s = num + "";
   while (s.length < size) {
     s = "0" + s;
@@ -133,31 +141,33 @@ function pad(num, size) {
  * @param   {string}  imageType  The type of image
  * @returns {function}           callback function
  */
-function getLatestHimawariDate(imageType, cb) {
+function getLatestHimawariDate(imageType: ImageType, cb: (date: Date) => void) {
   json("https://himawari-8.appspot.com/latest" + (imageType === INFRARED ? "?infrared=true" : ""),
-    (error, data) => {
+    (error, data: {date: string}) => {
       if (error) throw error;
       const latest = data.date;
       cb(resolveDate(latest + "Z"));
     });
 }
 
-function getLatestDscovrDate(imageType, cb) {
+function getLatestDscovrDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
   json("http://epic.gsfc.nasa.gov/api/" + (imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"),
-    (error, data) => {
+    (error, data: {date: string, image: string}[]) => {
       if (error) throw error;
       if (data.length === 0) return;
       const latest = data[data.length - 1];
-      latest.date = resolveDate(latest.date + "Z");
-      cb(latest);
+      cb({
+        date: resolveDate(latest.date + "Z"),
+        image: latest.image
+      });
     });
 }
 
 /**
  * Looks at the screen resolution and figures out a zoom level that returns images at a sufficient resolution.
  */
-function getOptimalNumberOfBlocks() {
-  const height = document.getElementById("output").clientHeight * window.devicePixelRatio;
+function getOptimalNumberOfBlocks(): number {
+  const height = (document.getElementById("output")!).clientHeight * window.devicePixelRatio;
   const minNumber = height / WIDTH;
 
   for (let i = 0; i < BLOCK_SIZES.length; i++) {
@@ -171,11 +181,11 @@ function getOptimalNumberOfBlocks() {
 }
 
 // the date that is currently loaded
-let loadedDate = null;
-let loadedType = null;
+let loadedDate: Date = null;
+let loadedType: ImageType = null;
 
-function timeSince(date) {
-  const seconds = Math.floor((new Date() - date) / 1000);
+function timeSince(date: Date) {
+  const seconds = Math.floor(((new Date()).getTime() - date.getTime()) / 1000);
 
   let interval = Math.floor(seconds / 31536000);
 
@@ -201,7 +211,7 @@ function timeSince(date) {
   return Math.floor(seconds) + " seconds";
 }
 
-function updateTimeAgo(date) {
+function updateTimeAgo(date: Date) {
   if (date === UNKNOWN) {
     document.getElementById("time").innerHTML = "";
   } else {
@@ -212,7 +222,7 @@ function updateTimeAgo(date) {
 /*
  * Set the right class on the body so that we can have different css.
  */
-function setBodyClass(imageType) {
+function setBodyClass(imageType: ImageType) {
   document.body.classList.remove("himawari");
   document.body.classList.remove("dscovr");
   document.body.classList.remove("goes");
@@ -235,7 +245,7 @@ function setBodyClass(imageType) {
   }
 }
 
-function updateStateAndUI(date, imageType) {
+function updateStateAndUI(date: Date, imageType: ImageType) {
   updateTimeAgo(date);
   loadedDate = date;
   setBodyClass(imageType);
@@ -246,7 +256,7 @@ function updateStateAndUI(date, imageType) {
  * Creates an image composed of tiles.
  * @param {Date object} date  The date for which to load the data.
  */
-function setHimawariImages(date, imageType) {
+function setHimawariImages(date: Date, imageType: ImageType) {
   // no need to set images if we have up to date images and the image type has not changed
   if (loadedDate && date.getTime() === loadedDate.getTime() && loadedType === imageType) {
     return;
@@ -269,15 +279,15 @@ function setHimawariImages(date, imageType) {
 
   const pixels = result.blocks * WIDTH;
 
-  const canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
   ctx.canvas.width = pixels;
   ctx.canvas.height = pixels;
 
   const q = queue();
 
   // add image to canvas and call callback when done
-  function addImage(tile, callback) {
+  function addImage(tile: Tile, callback: () => void) {
     const img = new Image();
     img.setAttribute("crossOrigin", "anonymous");
     img.onload = () => {
@@ -297,7 +307,7 @@ function setHimawariImages(date, imageType) {
 
     if (!initialLoad) {
       // copy canvas into output in one step
-      const output = document.getElementById("output");
+      const output = document.getElementById("output") as HTMLCanvasElement;
       const outCtx = output.getContext("2d");
       outCtx.canvas.width = pixels;
       outCtx.canvas.height = pixels;
@@ -309,12 +319,12 @@ function setHimawariImages(date, imageType) {
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, date);
+    localStorage.setItem(CACHED_DATE_KEY, date.toDateString());
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   });
 }
 
-function setDscovrImage(latest, imageType) {
+function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageType) {
   // no need to set images if we have up to date images and the image type has not changed
   if (loadedDate && latest.date.getTime() === loadedDate.getTime() && loadedType === imageType) {
     return;
@@ -328,7 +338,7 @@ function setDscovrImage(latest, imageType) {
     updateStateAndUI(latest.date, imageType);
   }
 
-  const canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
+  const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width = DSCOVR_WIDTH;
   ctx.canvas.height = DSCOVR_WIDTH;
@@ -340,7 +350,7 @@ function setDscovrImage(latest, imageType) {
 
     if (!initialLoad) {
       // copy canvas into output in one step
-      const output = document.getElementById("output");
+      const output = document.getElementById("output") as HTMLCanvasElement;
       const outCtx = output.getContext("2d");
       outCtx.canvas.width = DSCOVR_WIDTH;
       outCtx.canvas.height = DSCOVR_WIDTH;
@@ -352,7 +362,7 @@ function setDscovrImage(latest, imageType) {
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, latest.date);
+    localStorage.setItem(CACHED_DATE_KEY, latest.date.toDateString());
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   };
   const type = imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural";
@@ -361,7 +371,7 @@ function setDscovrImage(latest, imageType) {
   img.src = getCachedUrl(`${DSCOVR_BASE_URL}${type}/${latest.date.getFullYear()}/${month}/${date}/png/${latest.image}.png`);
 }
 
-function setGoesImage(imageType) {
+function setGoesImage(imageType: ImageType) {
   // if we haven't loaded images before, we want to show progress
   const key = localStorage.getItem(CACHED_IMAGE_TYPE_KEY);
   const initialLoad = !key || (key !== GOES_EAST && key !== GOES_WEST);
@@ -371,7 +381,7 @@ function setGoesImage(imageType) {
     updateStateAndUI(UNKNOWN, imageType);
   }
 
-  const canvas = initialLoad ? document.getElementById("output") : document.createElement("canvas");
+  const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width = GOES_WIDTH;
   ctx.canvas.height = GOES_WIDTH;
@@ -383,7 +393,7 @@ function setGoesImage(imageType) {
 
     if (!initialLoad) {
       // copy canvas into output in one step
-      const output = document.getElementById("output");
+      const output = document.getElementById("output") as HTMLCanvasElement;
       const outCtx = output.getContext("2d");
       outCtx.canvas.width = GOES_WIDTH;
       outCtx.canvas.height = GOES_WIDTH;
@@ -395,7 +405,7 @@ function setGoesImage(imageType) {
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, UNKNOWN);
+    localStorage.setItem(CACHED_DATE_KEY, String(UNKNOWN));
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   };
 
@@ -409,19 +419,19 @@ function setLatestImage() {
     return;
   }
 
-  function himawariCallback(imageType) {
-    getLatestHimawariDate(imageType, (latest) => {
+  function himawariCallback(imageType: ImageType) {
+    getLatestHimawariDate(imageType, (latest: Date) => {
       setHimawariImages(latest, imageType);
     });
   }
 
-  function dscovrCallback(imageType) {
-    getLatestDscovrDate(imageType, (latest) => {
+  function dscovrCallback(imageType: ImageType) {
+    getLatestDscovrDate(imageType, (latest: {date: Date, image: string}) => {
       setDscovrImage(latest, imageType);
     });
   }
 
-  function goesCallback(imageType) {
+  function goesCallback(imageType: ImageType) {
     setGoesImage(imageType);
   }
 
@@ -430,7 +440,7 @@ function setLatestImage() {
       imageType: VISIBLE_LIGHT
     };
 
-    function callback(items) {
+    const callback = (items: {imageType: ImageType}) => {
       switch (items.imageType) {
         case DSCOVR_EPIC:
         case DSCOVR_EPIC_ENHANCED:
@@ -448,12 +458,12 @@ function setLatestImage() {
       }
     }
 
-    if (window.browser) {
+    if (window['browser']) {
       // Firefox uses a promise based API.
-      browser.storage.sync.get(query).then(callback);
+      window['browser'].storage.sync.get(query).then(callback);
     } else {
       // Chrome uses callbacks.
-      chrome.storage.sync.get(query, callback);
+      window['chrome'].storage.sync.get(query, callback);
     };
   } else {
     // if we are not in the extension, let's always load visible light
@@ -463,7 +473,7 @@ function setLatestImage() {
 
 /** Load image from local storage */
 function setCachedImage() {
-  const canvas = document.getElementById("output");
+  const canvas = document.getElementById("output") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
   const date = new Date(localStorage.getItem(CACHED_DATE_KEY));
 
@@ -473,7 +483,7 @@ function setCachedImage() {
     ctx.canvas.height = img.height;
     ctx.drawImage(img, 0, 0);
 
-    updateStateAndUI(date, localStorage.getItem(CACHED_IMAGE_TYPE_KEY));
+    updateStateAndUI(date, localStorage.getItem(CACHED_IMAGE_TYPE_KEY) as ImageType);
   };
   img.src = localStorage.getItem(IMAGE_DATA_KEY);
 }
@@ -500,11 +510,11 @@ window.setInterval(() => {
 // hide some things if we are not an extension
 if (isExtension) {
   // when we are in an extension and the storage updates, try to load the new image
-  chrome.storage.onChanged.addListener(setLatestImage);
+  window['chrome'].storage.onChanged.addListener(setLatestImage);
 
   document.body.classList.add("extension");
   document.getElementById("go-to-options").addEventListener("click", () => {
-    chrome.runtime.openOptionsPage();
+    window['chrome'].runtime.openOptionsPage();
   });
 }
 
