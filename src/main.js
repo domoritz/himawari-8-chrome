@@ -135,7 +135,7 @@ function pad(num, size) {
  */
 function getLatestHimawariDate(imageType, cb) {
   json("https://himawari-8.appspot.com/latest" + (imageType === INFRARED ? "?infrared=true" : ""),
-    function (error, data) {
+    (error, data) => {
       if (error) throw error;
       const latest = data.date;
       cb(resolveDate(latest + "Z"));
@@ -144,7 +144,7 @@ function getLatestHimawariDate(imageType, cb) {
 
 function getLatestDscovrDate(imageType, cb) {
   json("http://epic.gsfc.nasa.gov/api/" + (imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"),
-    function (error, data) {
+    (error, data) => {
       if (error) throw error;
       if (data.length === 0) return;
       const latest = data[data.length - 1];
@@ -280,19 +280,19 @@ function setHimawariImages(date, imageType) {
   function addImage(tile, callback) {
     const img = new Image();
     img.setAttribute("crossOrigin", "anonymous");
-    img.onload = function () {
+    img.onload = () => {
       ctx.drawImage(img, tile.x * WIDTH, tile.y * WIDTH, WIDTH, WIDTH);
       callback();
     };
     img.src = tile.url;
   }
 
-  result.tiles.forEach(function (tile) {
+  result.tiles.forEach((tile) => {
     q.defer(addImage, tile);
   });
 
   // wait for all images to be drawn on canvas
-  q.awaitAll(function (error) {
+  q.awaitAll((error) => {
     if (error) throw error;
 
     if (!initialLoad) {
@@ -335,7 +335,7 @@ function setDscovrImage(latest, imageType) {
 
   const img = new Image();
   img.setAttribute("crossOrigin", "anonymous");
-  img.onload = function () {
+  img.onload = () => {
     ctx.drawImage(img, 0, 0);
 
     if (!initialLoad) {
@@ -378,7 +378,7 @@ function setGoesImage(imageType) {
 
   const img = new Image();
   img.setAttribute("crossOrigin", "anonymous");
-  img.onload = function () {
+  img.onload = () => {
     ctx.drawImage(img, 0, 0);
 
     if (!initialLoad) {
@@ -410,13 +410,13 @@ function setLatestImage() {
   }
 
   function himawariCallback(imageType) {
-    getLatestHimawariDate(imageType, function (latest) {
+    getLatestHimawariDate(imageType, (latest) => {
       setHimawariImages(latest, imageType);
     });
   }
 
   function dscovrCallback(imageType) {
-    getLatestDscovrDate(imageType, function (latest) {
+    getLatestDscovrDate(imageType, (latest) => {
       setDscovrImage(latest, imageType);
     });
   }
@@ -468,7 +468,7 @@ function setCachedImage() {
   const date = new Date(localStorage.getItem(CACHED_DATE_KEY));
 
   const img = new Image();
-  img.onload = function () {
+  img.onload = () => {
     ctx.canvas.width = img.width;
     ctx.canvas.height = img.height;
     ctx.drawImage(img, 0, 0);
@@ -491,7 +491,7 @@ if (localStorage.getItem(CACHED_DATE_KEY)) {
 setLatestImage();
 
 // update the time ago
-window.setInterval(function () {
+window.setInterval(() => {
   if (loadedDate) {
     updateTimeAgo(loadedDate);
   }
@@ -503,11 +503,11 @@ if (isExtension) {
   chrome.storage.onChanged.addListener(setLatestImage);
 
   document.body.classList.add("extension");
-  document.getElementById("go-to-options").addEventListener("click", function () {
+  document.getElementById("go-to-options").addEventListener("click", () => {
     chrome.runtime.openOptionsPage();
   });
 }
 
-document.getElementById("explore").addEventListener("click", function () {
+document.getElementById("explore").addEventListener("click", () => {
   window.open(loadedType === DSCOVR_EPIC ? DSCOVR_EXPLORER : loadedType === DSCOVR_EPIC_ENHANCED ? DSCOVR_EXPLORER_ENHANCED : HIMAWARI_EXPLORER, "_self");
 });
