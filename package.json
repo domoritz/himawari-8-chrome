@@ -5,23 +5,21 @@
   "main": "index.js",
   "dependencies": {
     "d3-queue": "^3.0.7",
-    "d3-request": "^1.0.5"
+    "d3-request": "^1.0.5",
+    "rollup-watch": "^4.3.1"
   },
   "devDependencies": {
     "@types/d3-queue": "^3.0.5",
     "@types/d3-request": "^1.0.2",
-    "npm-run-all": "^4.0.2",
     "rollup": "^0.45.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-typescript2": "^0.4.6",
     "rollup-plugin-uglify": "^2.0.1",
-    "typescript": "^2.4.2",
-    "watch": "^1.0.2"
+    "typescript": "^2.4.2"
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "run-p watch start",
-    "watch": "watch 'npm run build' src/",
+    "watch": "rollup -w -c",
     "start": "python -m SimpleHTTPServer",
     "prepack": "npm run build",
     "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json"
