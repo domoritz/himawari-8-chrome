@@ -5,17 +5,17 @@
   "main": "index.js",
   "dependencies": {
     "d3-queue": "^3.0.7",
-    "d3-request": "^1.0.5",
+    "d3-request": "^1.0.6",
     "rollup-watch": "^4.3.1"
   },
   "devDependencies": {
     "@types/d3-queue": "^3.0.5",
     "@types/d3-request": "^1.0.2",
-    "rollup": "^0.45.2",
+    "rollup": "^0.50.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-typescript2": "^0.4.6",
+    "rollup-plugin-typescript2": "^0.7.0",
     "rollup-plugin-uglify": "^2.0.1",
-    "typescript": "^2.4.2"
+    "typescript": "^2.5.3"
   },
   "scripts": {
     "build": "rollup -c",

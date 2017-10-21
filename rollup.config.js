@@ -3,10 +3,12 @@ import typescript from 'rollup-plugin-typescript2';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  entry: 'src/main.ts',
-  format: 'iife',
-  dest: 'bundle.js',
-  sourceMap: true,
+  input: 'src/main.ts',
+  output: {
+    file: 'bundle.js',
+    format: 'iife'
+  },
+  sourcemap: true,
   plugins: [
     nodeResolve({
       jsnext: true,
