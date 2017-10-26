@@ -14,7 +14,8 @@
     "newtab": "index.html"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "http://rammb-slider.cira.colostate.edu/"
   ],
   "offline_enabled": true,
   "icons": {

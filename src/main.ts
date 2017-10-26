@@ -1,5 +1,6 @@
-import {queue} from 'd3-queue';
-import {json} from 'd3-request';
+import {queue} from "d3-queue";
+import {json} from "d3-request";
+import {utcFormat, utcParse} from "d3-time-format";
 
 // base url for images
 const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
@@ -8,10 +9,13 @@ const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/archive/";
 const GOES_EAST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeseast/overview2/color_lrg/latestfull.jpg";
 const GOES_WEST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeswest/overview2/color_lrg/latestfull.jpg";
 
+const SLIDER_BASE_URL = "http://rammb-slider.cira.colostate.edu/data/";
+
 // links to online image explorers
 const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
 const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
 const DSCOVR_EXPLORER_ENHANCED = DSCOVR_EXPLORER + "/enhanced";
+const SLIDER_EXPLORER = "http://rammb-slider.cira.colostate.edu/";
 
 // image types
 const INFRARED = "INFRARED_FULL";
@@ -20,11 +24,16 @@ const DSCOVR_EPIC = "EPIC";
 const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
 const GOES_EAST = "GOES_EAST";  // GOES 13
 const GOES_WEST = "GOES_WEST";  // GOES 15
+const GOES_16 = "GOES_16";
 
-type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC | typeof DSCOVR_EPIC_ENHANCED | typeof GOES_EAST | typeof GOES_WEST;
+type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC |
+  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_EAST | typeof GOES_WEST | typeof GOES_16;
 
-const WIDTH = 550;
-const BLOCK_SIZES = [1, 4, 8, 16, 20];
+const HIMAWARI_WIDTH = 550;
+const HIMAWARI_BLOCK_SIZES = [1, 4, 8, 16, 20];
+
+const SLIDER_WIDTH = 678;
+const SLIDER_BLOCK_SIZES = [1, 2, 4, 8, 16];
 
 const DSCOVR_WIDTH = 2048;
 const GOES_WIDTH = 3072;
@@ -41,13 +50,12 @@ const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 // unknown date
 const UNKNOWN: Date = null;
 
-const isExtension = window['chrome'] && !!window['chrome'].storage;
+const isExtension = "chrome" in window && !!(window as any).chrome.storage;
 
-interface Tile {
-  x: number,
-  y: number,
-  url: string,
-  name: string
+interface ITile {
+  x: number;
+  y: number;
+  url: string;
 }
 
 /**
@@ -56,63 +64,70 @@ interface Tile {
  * Options:
  * - date: Date object
  * - type: boolean (default: visible light)
- * - zoom: number (default: 1)
  * - blocks: alternative to zoom, how many images per row/column (default: 1)
  *      Has to be a valid block number (1, 4, 8, 16, 20)
  *
  * @param  {Object}       options
  */
-function himawariURLs(options: {date: Date, type?: ImageType, zoom?: number, blocks?: number}) {
+function himawariURLs(options: {date: Date, type?: ImageType, blocks: number}) {
   const baseURL = HIMAWARI_BASE_URL + (options.type || VISIBLE_LIGHT);
   const date = options.date;
 
   // Define some image parameters
-  const blocks = options.blocks || (options.zoom ? BLOCK_SIZES[options.zoom - 1] : BLOCK_SIZES[0]);
-  const level = blocks + 'd';
-  const time = [date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()].map(function (s) { return pad(s, 2); }).join("");
-  const year = date.getUTCFullYear();
-  const month = pad(date.getUTCMonth() + 1, 2);
-  const day = pad(date.getUTCDate(), 2);
+  const blocks = options.blocks;
 
   // compose URL
-  const tilesURL = [baseURL, level, WIDTH, year, month, day, time].join("/");
-  const tiles: Tile[] = [];
+  const tilesURL = `${baseURL}/${blocks}d/${HIMAWARI_WIDTH}/${utcFormat("%Y/%m/%d/%H%M%S")(date)}`;
+  const tiles: ITile[] = [];
 
   for (let y = 0; y < blocks; y++) {
     for (let x = 0; x < blocks; x++) {
-      const name = x + "_" + y + ".png";
-      const url = tilesURL + "_" + name;
+      const url = `${tilesURL}_${x}_${y}.png`;
 
       tiles.push({
-        name: name,
         url: getCachedUrl(url),
-        x: x,
-        y: y
+        x,
+        y,
       });
     }
   }
 
   return {
-    tiles: tiles,
-    blocks: blocks,
-    date: date
+    blocks,
+    date,
+    tiles,
   };
 }
 
-/**
- * Parses a date string into a date object.
- * @param   {string | Date} date  Date as string or date object
- * @returns {Date}                Date object
- */
-function resolveDate(date: string | Date) {
-  if (typeof date === "string") {
-    // Don't use Date.parse because it doesn't work with YYYY-MM-DD HH:MM:SSZ
-    const parts = date.match(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})Z/);
-    parts[2] = String(+parts[2] - 1); // months are zero-based
-    return new Date(Date.UTC.apply(this, parts.slice(1)));
-  } else {
-    return date;
+function sliderURLs(options: {date: Date, blocks: number, level: number}) {
+  const date = options.date;
+
+  const blocks = options.blocks;
+  const level = options.level;
+
+  const formattedDate = utcFormat("%Y%m%d")(options.date);
+  const formattedDateTime = utcFormat("%Y%m%d%H%M%S")(options.date);
+
+  const tilesURL = `${SLIDER_BASE_URL}/imagery/${formattedDate}/goes-16---full_disk/geocolor/${formattedDateTime}/`;
+  const tiles: ITile[] = [];
+
+  for (let y = 0; y < blocks; y++) {
+    for (let x = 0; x < blocks; x++) {
+      const url = `${tilesURL}${pad(level, 2)}/${pad(y, 3)}_${pad(x, 3)}.png`;
+
+      tiles.push({
+        url: getCachedUrl(url),
+        x,
+        y,
+      });
+    }
   }
+
+  return {
+    blocks,
+    date,
+    tiles,
+  };
 }
 
 /**
@@ -137,47 +152,55 @@ function pad(num: string | number, size: number) {
 }
 
 /**
- * Get the date of the latest himawari image by making an Ajax request.
+ * Get the date of the latest Himawari image by making an Ajax request.
  * @param   {string}  imageType  The type of image
  * @returns {function}           callback function
  */
 function getLatestHimawariDate(imageType: ImageType, cb: (date: Date) => void) {
   json("https://himawari-8.appspot.com/latest" + (imageType === INFRARED ? "?infrared=true" : ""),
     (error, data: {date: string}) => {
-      if (error) throw error;
+      if (error) { throw error; }
       const latest = data.date;
-      cb(resolveDate(latest + "Z"));
+      cb(utcParse("%Y-%m-%d %H:%M:%S")(latest));
     });
 }
 
 function getLatestDscovrDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
   json("http://epic.gsfc.nasa.gov/api/" + (imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"),
-    (error, data: {date: string, image: string}[]) => {
-      if (error) throw error;
-      if (data.length === 0) return;
+    (error, data: Array<{date: string, image: string}>) => {
+      if (error) { throw error; }
+      if (data.length === 0) { return; }
       const latest = data[data.length - 1];
       cb({
-        date: resolveDate(latest.date + "Z"),
-        image: latest.image
+        date: utcParse("%Y-%m-%d %H:%M:%S")(latest.date),
+        image: latest.image,
       });
     });
+}
+
+function getLatestSliderDate(cb: (date: Date) => void) {
+  json(`${SLIDER_BASE_URL}json/goes-16/full_disk/geocolor/latest_times.json`, (error, data: {timestamps_int: string[]}) => {
+    if (error) { throw error; }
+    cb(utcParse("%Y%m%d%H%M%S")(data.timestamps_int[0]));
+  });
 }
 
 /**
  * Looks at the screen resolution and figures out a zoom level that returns images at a sufficient resolution.
  */
-function getOptimalNumberOfBlocks(): number {
+function getOptimalNumberOfBlocks(width: number, sizes: number[]): {blocks: number, level: number} {
   const height = (document.getElementById("output")!).clientHeight * window.devicePixelRatio;
-  const minNumber = height / WIDTH;
+  const minNumber = height / width;
 
-  for (let i = 0; i < BLOCK_SIZES.length; i++) {
-    const l = BLOCK_SIZES[i];
-    if (l > minNumber) {
-      return l;
+  for (let level = 0; level < sizes.length; level++) {
+    const blocks = sizes[level];
+    if (blocks > minNumber) {
+      return {blocks, level};
     }
   }
 
-  return BLOCK_SIZES[BLOCK_SIZES.length - 1];
+  const lastLevel = sizes.length - 1;
+  return {blocks: sizes[lastLevel], level: lastLevel};
 }
 
 // the date that is currently loaded
@@ -215,7 +238,7 @@ function updateTimeAgo(date: Date) {
   if (date === UNKNOWN) {
     document.getElementById("time").innerHTML = "";
   } else {
-    document.getElementById("time").innerHTML = "<abbr title=\"" + date + "\">" + timeSince(date) + "</abbr> ago";
+    document.getElementById("time").innerHTML = `<abbr title="${date}">${timeSince(date)}</abbr> ago`;
   }
 }
 
@@ -226,6 +249,7 @@ function setBodyClass(imageType: ImageType) {
   document.body.classList.remove("himawari");
   document.body.classList.remove("dscovr");
   document.body.classList.remove("goes");
+  document.body.classList.remove("goes16");
 
   switch (imageType) {
     case INFRARED:
@@ -235,6 +259,9 @@ function setBodyClass(imageType: ImageType) {
     case DSCOVR_EPIC:
     case DSCOVR_EPIC_ENHANCED:
       document.body.classList.add("dscovr");
+      break;
+    case GOES_16:
+      document.body.classList.add("goes16");
       break;
     case GOES_EAST:
     case GOES_WEST:
@@ -265,19 +292,19 @@ function setHimawariImages(date: Date, imageType: ImageType) {
   // if we haven't loaded images before, we want to show progress
   const initialLoad = !localStorage.getItem(CACHED_DATE_KEY);
 
-  // immediately set the type and body class beacuse we are not loading in the background
+  // immediately set the type and body class because we are not loading in the background
   if (initialLoad) {
     updateStateAndUI(date, imageType);
   }
 
   // get the URLs for all tiles
   const result = himawariURLs({
-    date: date,
-    blocks: getOptimalNumberOfBlocks(),
-    type: imageType
+    blocks: getOptimalNumberOfBlocks(HIMAWARI_WIDTH, HIMAWARI_BLOCK_SIZES).blocks,
+    date,
+    type: imageType,
   });
 
-  const pixels = result.blocks * WIDTH;
+  const pixels = result.blocks * HIMAWARI_WIDTH;
 
   const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
@@ -287,23 +314,23 @@ function setHimawariImages(date: Date, imageType: ImageType) {
   const q = queue();
 
   // add image to canvas and call callback when done
-  function addImage(tile: Tile, callback: () => void) {
+  function addImage(tile: ITile, callback: () => void) {
     const img = new Image();
     img.setAttribute("crossOrigin", "anonymous");
     img.onload = () => {
-      ctx.drawImage(img, tile.x * WIDTH, tile.y * WIDTH, WIDTH, WIDTH);
+      ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
       callback();
     };
     img.src = tile.url;
   }
 
-  result.tiles.forEach((tile) => {
+  result.tiles.forEach(tile => {
     q.defer(addImage, tile);
   });
 
   // wait for all images to be drawn on canvas
-  q.awaitAll((error) => {
-    if (error) throw error;
+  q.awaitAll(error => {
+    if (error) { throw error; }
 
     if (!initialLoad) {
       // copy canvas into output in one step
@@ -333,7 +360,7 @@ function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageTyp
   // if we haven't loaded images before, we want to show progress
   const initialLoad = !localStorage.getItem(CACHED_DATE_KEY);
 
-  // immediately set the type and body class beacuse we are not loading in the background
+  // immediately set the type and body class because we are not loading in the background
   if (initialLoad) {
     updateStateAndUI(latest.date, imageType);
   }
@@ -365,6 +392,7 @@ function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageTyp
     localStorage.setItem(CACHED_DATE_KEY, latest.date.toDateString());
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   };
+
   const type = imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural";
   const month = pad(latest.date.getMonth() + 1, 2);
   const date = pad(latest.date.getDate(), 2);
@@ -376,7 +404,7 @@ function setGoesImage(imageType: ImageType) {
   const key = localStorage.getItem(CACHED_IMAGE_TYPE_KEY);
   const initialLoad = !key || (key !== GOES_EAST && key !== GOES_WEST);
 
-  // immediately set the type and body class beacuse we are not loading in the background
+  // immediately set the type and body class because we are not loading in the background
   if (initialLoad) {
     updateStateAndUI(UNKNOWN, imageType);
   }
@@ -409,7 +437,74 @@ function setGoesImage(imageType: ImageType) {
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   };
 
-  img.src = getCachedUrl(imageType === GOES_WEST ? GOES_WEST_URL : GOES_EAST_URL, 60*60);
+  img.src = getCachedUrl(imageType === GOES_WEST ? GOES_WEST_URL : GOES_EAST_URL, 60 * 60);
+}
+
+function setSliderImages(date: Date, imageType: ImageType) {
+  // no need to set images if we have up to date images and the image type has not changed
+  if (loadedDate && date.getTime() === loadedDate.getTime() && loadedType === imageType) {
+    return;
+  }
+
+  // if we haven't loaded images before, we want to show progress
+  const initialLoad = !localStorage.getItem(CACHED_DATE_KEY);
+
+  // immediately set the type and body class because we are not loading in the background
+  if (initialLoad) {
+    updateStateAndUI(date, imageType);
+  }
+
+  // get the URLs for all tiles
+  const result = sliderURLs({
+    date,
+    ...getOptimalNumberOfBlocks(SLIDER_WIDTH, SLIDER_BLOCK_SIZES),
+  });
+
+  const pixels = result.blocks * HIMAWARI_WIDTH;
+
+  const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  ctx.canvas.width = pixels;
+  ctx.canvas.height = pixels;
+
+  const q = queue();
+
+  // add image to canvas and call callback when done
+  function addImage(tile: ITile, callback: () => void) {
+    const img = new Image();
+    img.setAttribute("crossOrigin", "anonymous");
+    img.onload = () => {
+      ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
+      callback();
+    };
+    img.src = tile.url;
+  }
+
+  result.tiles.forEach(tile => {
+    q.defer(addImage, tile);
+  });
+
+  // wait for all images to be drawn on canvas
+  q.awaitAll(error => {
+    if (error) { throw error; }
+
+    if (!initialLoad) {
+      // copy canvas into output in one step
+      const output = document.getElementById("output") as HTMLCanvasElement;
+      const outCtx = output.getContext("2d");
+      outCtx.canvas.width = pixels;
+      outCtx.canvas.height = pixels;
+      outCtx.drawImage(canvas, 0, 0);
+    }
+
+    updateStateAndUI(date, imageType);
+
+    // put date and image data in cache
+    const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+    localStorage.setItem(IMAGE_DATA_KEY, imageData);
+    localStorage.setItem(CACHED_DATE_KEY, date.toDateString());
+    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
+  });
 }
 
 /* Asynchronously load latest image(s) date and images for that date */
@@ -431,40 +526,54 @@ function setLatestImage() {
     });
   }
 
-  function goesCallback(imageType: ImageType) {
-    setGoesImage(imageType);
+  function sliderCallback(imageType: ImageType) {
+    getLatestSliderDate((latest: Date) => {
+      setSliderImages(latest, imageType);
+    });
   }
 
   if (isExtension) {
     const query = {
-      imageType: VISIBLE_LIGHT
+      animated: false,
+      imageType: VISIBLE_LIGHT,
     };
 
-    const callback = (items: {imageType: ImageType}) => {
-      switch (items.imageType) {
+    const callback = (options: {imageType: ImageType, animated: boolean}) => {
+
+      // enable and disable animation
+      if (options.animated) {
+        document.body.classList.add("animated");
+      } else {
+        document.body.classList.remove("animated");
+      }
+
+      switch (options.imageType) {
         case DSCOVR_EPIC:
         case DSCOVR_EPIC_ENHANCED:
-          dscovrCallback(items.imageType);
+          dscovrCallback(options.imageType);
           break;
         case GOES_EAST:
         case GOES_WEST:
-          goesCallback(items.imageType);
+          setGoesImage(options.imageType);
+          break;
+        case GOES_16:
+          sliderCallback(options.imageType);
           break;
         case INFRARED:
         case VISIBLE_LIGHT:
         default:
-          himawariCallback(items.imageType);
+          himawariCallback(options.imageType);
           break;
       }
-    }
+    };
 
-    if (window['browser']) {
+    if ("browser" in window) {
       // Firefox uses a promise based API.
-      window['browser'].storage.sync.get(query).then(callback);
+      (window as any).browser.storage.sync.get(query).then(callback);
     } else {
       // Chrome uses callbacks.
-      window['chrome'].storage.sync.get(query, callback);
-    };
+      (window as any).chrome.storage.sync.get(query, callback);
+    }
   } else {
     // if we are not in the extension, let's always load visible light
     himawariCallback(VISIBLE_LIGHT);
@@ -510,14 +619,30 @@ window.setInterval(() => {
 // hide some things if we are not an extension
 if (isExtension) {
   // when we are in an extension and the storage updates, try to load the new image
-  window['chrome'].storage.onChanged.addListener(setLatestImage);
+  (window as any).chrome.storage.onChanged.addListener(setLatestImage);
 
   document.body.classList.add("extension");
   document.getElementById("go-to-options").addEventListener("click", () => {
-    window['chrome'].runtime.openOptionsPage();
+    (window as any).chrome.runtime.openOptionsPage();
   });
 }
 
 document.getElementById("explore").addEventListener("click", () => {
-  window.open(loadedType === DSCOVR_EPIC ? DSCOVR_EXPLORER : loadedType === DSCOVR_EPIC_ENHANCED ? DSCOVR_EXPLORER_ENHANCED : HIMAWARI_EXPLORER, "_self");
+  switch (loadedType) {
+    case DSCOVR_EPIC:
+      window.open(DSCOVR_EXPLORER, "_self");
+    case DSCOVR_EPIC_ENHANCED:
+      window.open(DSCOVR_EXPLORER_ENHANCED, "_self");
+      break;
+    case GOES_16:
+      window.open(SLIDER_EXPLORER, "_self");
+      break;
+    case INFRARED:
+    case VISIBLE_LIGHT:
+      window.open(HIMAWARI_EXPLORER, "_self");
+      break;
+    default:
+      window.alert("No explorer found.");
+      break;
+  }
 });

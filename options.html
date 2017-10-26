@@ -4,21 +4,30 @@
   <meta charset="utf-8">
   <title>Himawari 8 New Tab Page Options</title>
   <style type="text/css">
+    label {
+      font-weight: bold;
+    }
     .control {
-      margin-top: 10px;
+      margin-top: 2em;
     }
     .top-links {
       text-align: right;
-      margin-bottom: 10px;
+      margin-bottom: 1.5em;
     }
     .desc {
-      padding-top: 0.6em;
+      padding-top: 0.5em;
       font-size: 0.9em;
       color: #444;
     }
     .desc p {
       margin-top: 0;
       margin-bottom: 0.5em;
+    }
+    .extraOptions {
+      margin-top: 2em;
+    }
+    .extraOptions small {
+      margin-left: 18px;
     }
   </style>
 </head>
@@ -37,6 +46,7 @@
       <option value="EPIC_ENHANCED">DSCOVR EPIC enhanced</option>
       <option value="GOES_EAST">GOES 13 (East)</option>
       <option value="GOES_WEST">GOES 15 (West)</option>
+      <option value="GOES_16">GOES 16</option>
     </select>
     <div class="desc">
       <p>
@@ -53,7 +63,14 @@
       </p><p>
         The <a href="https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite">NOAA GOES</a> satellites are geo stationary
         like Himawari but show the pacific (GOES West) and the Americas (GOES East).
+      </p><p>
+        <a href="https://en.wikipedia.org/wiki/GOES-16">GOES 16</a> is a new geostationary satellite that will replace GOES East at the end of 2017.
       </p>
+    </div>
+
+    <div class="extraOptions">
+      <label><input type="checkbox" id="animated"> Animated</label><br/>
+      <small>Animate the earth when it moves in.</small>
     </div>
   </div>
 

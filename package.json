@@ -6,15 +6,18 @@
   "dependencies": {
     "d3-queue": "^3.0.7",
     "d3-request": "^1.0.6",
+    "d3-time-format": "^2.1.0",
     "rollup-watch": "^4.3.1"
   },
   "devDependencies": {
     "@types/d3-queue": "^3.0.5",
     "@types/d3-request": "^1.0.2",
+    "@types/d3-time-format": "^2.1.0",
     "rollup": "^0.50.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-typescript2": "^0.7.0",
     "rollup-plugin-uglify": "^2.0.1",
+    "tslint": "^5.8.0",
     "typescript": "^2.5.3"
   },
   "scripts": {
@@ -22,7 +25,8 @@
     "watch": "rollup -w -c",
     "start": "python -m SimpleHTTPServer",
     "prepack": "npm run build",
-    "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json"
+    "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "lint": "tslint -p ."
   },
   "repository": {
     "type": "git",

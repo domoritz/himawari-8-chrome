@@ -59,6 +59,11 @@ abbr {
     height: 100vh;
     width: 100vh;
   }
+
+  .goes16 #output {
+    height: 90vh;
+    width: 90vh;
+  }
 }
 @media screen and (orientation:portrait) {
   .himawari #output {
@@ -74,6 +79,11 @@ abbr {
   .goes #output {
     height: 100vw;
     width: 100vw;
+  }
+
+  .goes16 #output {
+    height: 90vw;
+    width: 90vw;
   }
 }
 
@@ -102,12 +112,12 @@ abbr {
   display: initial;
 }
 
-/* Optional animation, not enabled */
+/* Optional animation */
 .animated #output {
-  animation: fadein 0.3s;
+  animation: fadein 1s ease;
 }
 
 @keyframes fadein {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: .2; transform: scale(.7, .7) rotate(-5deg); }
+  to   { opacity: 1; transform: scale(1, 1) rotate(0); }
 }

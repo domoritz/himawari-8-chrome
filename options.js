@@ -1,7 +1,8 @@
 // Saves options to storage.
 function saveOptions() {
   const query = {
-    imageType: document.getElementById('image').value
+    imageType: document.getElementById('image').value,
+    animated: document.getElementById('animated').checked
   };
   function callback() {
     // Update status to let user know options were saved.
@@ -9,7 +10,7 @@ function saveOptions() {
     status.textContent = 'Options saved.';
     setTimeout(() => {
       status.textContent = '';
-    }, 1000);
+    }, 2000);
   }
 
   if (window.browser) {
@@ -24,9 +25,11 @@ function saveOptions() {
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 function restoreOptions() {
-  const query = {imageType: 'D531106'};
-  function callback(items) {
-    document.getElementById('image').value = items.imageType;
+  const query = {imageType: 'D531106', animated: false};
+
+  function callback(options) {
+    document.getElementById('image').value = options.imageType;
+    document.getElementById('animated').checked = options.animated;
   }
 
   if (window.browser) {
