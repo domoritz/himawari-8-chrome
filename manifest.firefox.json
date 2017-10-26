@@ -7,6 +7,7 @@
   "homepage_url": "https://github.com/domoritz/himawari-8-chrome",
   "applications": {
     "gecko": {
+      "id": "{097d8e5f-c7e3-478d-87d0-d39a063afcf8}",
       "strict_min_version": "54.0"
     }
   },
@@ -17,7 +18,6 @@
     "storage",
     "http://rammb-slider.cira.colostate.edu/"
   ],
-  "offline_enabled": true,
   "icons": {
     "128": "icons/icon128.png",
     "48":"icons/icon48.png",
