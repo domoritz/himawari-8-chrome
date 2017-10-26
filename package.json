@@ -1,7 +1,7 @@
 {
-  "name": "himawari-chrome",
-  "version": "0.10.0",
-  "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome.",
+  "name": "himawari",
+  "version": "0.11.0",
+  "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome or Firefox.",
   "main": "index.js",
   "dependencies": {
     "d3-queue": "^3.0.7",
@@ -25,7 +25,9 @@
     "watch": "rollup -w -c",
     "start": "python -m SimpleHTTPServer",
     "prepack": "npm run build",
-    "pack": "zip himawari.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "pack": "npm run pack:firefox && npm run pack:chrome",
+    "pack:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "pack:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
     "lint": "tslint -p ."
   },
   "repository": {
