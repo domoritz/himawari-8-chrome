@@ -507,6 +507,22 @@ function setSliderImages(date: Date, imageType: ImageType) {
   });
 }
 
+/** Wrapper around browser extension API. */
+function getBrowserOptions(callback: (options: {imageType: ImageType, animated: boolean}) => void) {
+  const query = {
+    animated: false,
+    imageType: VISIBLE_LIGHT,
+  };
+
+  if ("browser" in window) {
+    // Firefox uses a promise based API.
+    (window as any).browser.storage.sync.get(query).then(callback);
+  } else {
+    // Chrome uses callbacks.
+    (window as any).chrome.storage.sync.get(query, callback);
+  }
+}
+
 /* Asynchronously load latest image(s) date and images for that date */
 function setLatestImage() {
   if (!navigator.onLine) {
@@ -533,20 +549,7 @@ function setLatestImage() {
   }
 
   if (isExtension) {
-    const query = {
-      animated: false,
-      imageType: VISIBLE_LIGHT,
-    };
-
-    const callback = (options: {imageType: ImageType, animated: boolean}) => {
-
-      // enable and disable animation
-      if (options.animated) {
-        document.body.classList.add("animated");
-      } else {
-        document.body.classList.remove("animated");
-      }
-
+    getBrowserOptions(options => {
       switch (options.imageType) {
         case DSCOVR_EPIC:
         case DSCOVR_EPIC_ENHANCED:
@@ -565,15 +568,7 @@ function setLatestImage() {
           himawariCallback(options.imageType);
           break;
       }
-    };
-
-    if ("browser" in window) {
-      // Firefox uses a promise based API.
-      (window as any).browser.storage.sync.get(query).then(callback);
-    } else {
-      // Chrome uses callbacks.
-      (window as any).chrome.storage.sync.get(query, callback);
-    }
+    });
   } else {
     // if we are not in the extension, let's always load visible light
     himawariCallback(VISIBLE_LIGHT);
@@ -603,11 +598,27 @@ window.setInterval(setLatestImage, RELOAD_INTERVAL);
 // also load a new image when we come back online
 window.addEventListener("online", setLatestImage);
 
-// initial loading
-if (localStorage.getItem(CACHED_DATE_KEY)) {
-  setCachedImage();
+function init() {
+  // initial loading
+  if (localStorage.getItem(CACHED_DATE_KEY)) {
+    setCachedImage();
+  }
+  setLatestImage();
 }
-setLatestImage();
+
+// enable or disable animation
+if (isExtension) {
+  getBrowserOptions(options => {
+    if (options.animated) {
+      document.body.classList.add("animated");
+    } else {
+      document.body.classList.remove("animated");
+    }
+    init();
+  });
+} else {
+  init();
+}
 
 // update the time ago
 window.setInterval(() => {

@@ -23,6 +23,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Changelog
 
+0.12.0 Improve animation initialization.
 0.11.1 Faster animation
 0.11.0 Add GOES 16 and animation.
 0.10.0 Firefox support.
