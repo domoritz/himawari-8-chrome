@@ -352,7 +352,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, date.toDateString());
+    localStorage.setItem(CACHED_DATE_KEY, date.toString());
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   });
 }
@@ -395,7 +395,7 @@ function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageTyp
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, latest.date.toDateString());
+    localStorage.setItem(CACHED_DATE_KEY, latest.date.toString());
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   };
 
@@ -508,7 +508,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
     // put date and image data in cache
     const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, date.toDateString());
+    localStorage.setItem(CACHED_DATE_KEY, date.toString());
     localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
   });
 }
