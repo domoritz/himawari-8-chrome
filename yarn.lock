@@ -1181,6 +1181,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
+web-ext-types@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/web-ext-types/-/web-ext-types-1.1.1.tgz#0612b14fb21e516b154fb10db9fd8e092ad20c56"
+
 webextension-polyfill@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.2.1.tgz#cdfc9126033039f1713553157d35beff1d4d6f4a"

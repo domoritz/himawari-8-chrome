@@ -50,10 +50,9 @@ const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 // unknown date
 const UNKNOWN: Date = null;
 
-const browser = (window as any).browser;
-const isExtension = "browser" in window && !!browser.storage;
+const isExtension = browser && !!browser.storage;
 
-const DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS: {animated: boolean, imageType: ImageType} = {
   animated: false,
   imageType: VISIBLE_LIGHT,
 };

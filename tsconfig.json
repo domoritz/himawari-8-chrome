@@ -6,7 +6,8 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"]
   },
   "include": [
     "src/**/*"
