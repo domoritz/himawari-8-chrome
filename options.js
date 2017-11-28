@@ -4,6 +4,7 @@ function saveOptions() {
     imageType: document.getElementById('image').value,
     animated: document.getElementById('animated').checked
   };
+
   function callback() {
     // Update status to let user know options were saved.
     const status = document.getElementById('status');
@@ -13,13 +14,7 @@ function saveOptions() {
     }, 2000);
   }
 
-  if (window.browser) {
-    // Firefox uses a promise based API.
-    browser.storage.sync.set(query).then(callback);
-  } else {
-    // Chrome uses callbacks.
-    chrome.storage.sync.set(query, callback);
-  }
+  browser.storage.sync.set(query).then(callback);
 }
 
 // Restores select box and checkbox state using the preferences
@@ -32,13 +27,7 @@ function restoreOptions() {
     document.getElementById('animated').checked = options.animated;
   }
 
-  if (window.browser) {
-    // Firefox uses a promise based API.
-    browser.storage.sync.get(query).then(callback);
-  } else {
-    // Chrome uses callbacks.
-    chrome.storage.sync.get(query, callback);
-  };
+  browser.storage.sync.get(query).then(callback);
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);

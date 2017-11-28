@@ -50,7 +50,13 @@ const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 // unknown date
 const UNKNOWN: Date = null;
 
-const isExtension = "chrome" in window && !!(window as any).chrome.storage;
+const browser = (window as any).browser;
+const isExtension = "browser" in window && !!browser.storage;
+
+const DEFAULT_OPTIONS = {
+  animated: false,
+  imageType: VISIBLE_LIGHT,
+};
 
 interface ITile {
   x: number;
@@ -507,22 +513,6 @@ function setSliderImages(date: Date, imageType: ImageType) {
   });
 }
 
-/** Wrapper around browser extension API. */
-function getBrowserOptions(callback: (options: {imageType: ImageType, animated: boolean}) => void) {
-  const query = {
-    animated: false,
-    imageType: VISIBLE_LIGHT,
-  };
-
-  if ("browser" in window) {
-    // Firefox uses a promise based API.
-    (window as any).browser.storage.sync.get(query).then(callback);
-  } else {
-    // Chrome uses callbacks.
-    (window as any).chrome.storage.sync.get(query, callback);
-  }
-}
-
 /* Asynchronously load latest image(s) date and images for that date */
 function setLatestImage() {
   if (!navigator.onLine) {
@@ -549,7 +539,7 @@ function setLatestImage() {
   }
 
   if (isExtension) {
-    getBrowserOptions(options => {
+    browser.storage.sync.get(DEFAULT_OPTIONS).then(options => {
       switch (options.imageType) {
         case DSCOVR_EPIC:
         case DSCOVR_EPIC_ENHANCED:
@@ -608,7 +598,7 @@ function init() {
 
 // enable or disable animation
 if (isExtension) {
-  getBrowserOptions(options => {
+  browser.storage.sync.get(DEFAULT_OPTIONS).then(options => {
     if (options.animated) {
       document.body.classList.add("animated");
     } else {
@@ -630,11 +620,11 @@ window.setInterval(() => {
 // hide some things if we are not an extension
 if (isExtension) {
   // when we are in an extension and the storage updates, try to load the new image
-  (window as any).chrome.storage.onChanged.addListener(setLatestImage);
+  browser.storage.onChanged.addListener(setLatestImage);
 
   document.body.classList.add("extension");
   document.getElementById("go-to-options").addEventListener("click", () => {
-    (window as any).chrome.runtime.openOptionsPage();
+    browser.runtime.openOptionsPage();
   });
 }
 

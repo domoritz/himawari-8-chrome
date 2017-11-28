@@ -1,33 +1,35 @@
 {
   "name": "himawari",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome or Firefox.",
   "main": "index.js",
   "dependencies": {
     "d3-queue": "^3.0.7",
     "d3-request": "^1.0.6",
-    "d3-time-format": "^2.1.0",
-    "rollup-watch": "^4.3.1"
+    "d3-time-format": "^2.1.1",
+    "rollup-watch": "^4.3.1",
+    "webextension-polyfill": "^0.2.1"
   },
   "devDependencies": {
     "@types/d3-queue": "^3.0.5",
     "@types/d3-request": "^1.0.2",
     "@types/d3-time-format": "^2.1.0",
-    "rollup": "^0.51.8",
+    "rollup": "^0.52.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-typescript2": "^0.8.1",
+    "rollup-plugin-typescript2": "^0.8.4",
     "rollup-plugin-uglify": "^2.0.1",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.2"
   },
   "scripts": {
+    "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.* lib",
     "build": "rollup -c",
     "watch": "rollup -w -c",
     "start": "python -m SimpleHTTPServer",
     "prepack": "npm run build",
     "pack": "npm run pack:firefox && npm run pack:chrome",
-    "pack:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
-    "pack:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "pack:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "pack:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
     "lint": "tslint -p ."
   },
   "repository": {
