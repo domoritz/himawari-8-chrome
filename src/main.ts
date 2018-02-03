@@ -4,7 +4,7 @@ import {utcFormat, utcParse} from "d3-time-format";
 
 // base url for images
 const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
-const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/archive/";
+const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
 const GOES_EAST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeseast/overview2/color_lrg/latestfull.jpg";
 const GOES_WEST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeswest/overview2/color_lrg/latestfull.jpg";
@@ -162,7 +162,7 @@ function pad(num: string | number, size: number) {
  * @returns {function}           callback function
  */
 function getLatestHimawariDate(imageType: ImageType, cb: (date: Date) => void) {
-  json("https://himawari-8.appspot.com/latest" + (imageType === INFRARED ? "?infrared=true" : ""),
+  json(`https://himawari-8.appspot.com/latest${imageType === INFRARED ? "?infrared=true" : ""}`,
     (error, data: {date: string}) => {
       if (error) { throw error; }
       const latest = data.date;
@@ -171,7 +171,7 @@ function getLatestHimawariDate(imageType: ImageType, cb: (date: Date) => void) {
 }
 
 function getLatestDscovrDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
-  json("http://epic.gsfc.nasa.gov/api/" + (imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"),
+  json(`${DSCOVR_BASE_URL}api/${imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"}`,
     (error, data: Array<{date: string, image: string}>) => {
       if (error) { throw error; }
       if (data.length === 0) { return; }
@@ -401,7 +401,7 @@ function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageTyp
   const type = imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural";
   const month = pad(latest.date.getMonth() + 1, 2);
   const date = pad(latest.date.getDate(), 2);
-  img.src = getCachedUrl(`${DSCOVR_BASE_URL}${type}/${latest.date.getFullYear()}/${month}/${date}/png/${latest.image}.png`);
+  img.src = getCachedUrl(`${DSCOVR_BASE_URL}archive/${type}/${latest.date.getFullYear()}/${month}/${date}/png/${latest.image}.png`);
 }
 
 function setGoesImage(imageType: ImageType) {
