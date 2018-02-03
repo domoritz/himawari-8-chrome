@@ -55,11 +55,6 @@ abbr {
     width: 100vh;
   }
 
-  .goes #output {
-    height: 100vh;
-    width: 100vh;
-  }
-
   .goes16 #output {
     height: 90vh;
     width: 90vh;
@@ -72,11 +67,6 @@ abbr {
   }
 
   .dscovr #output {
-    height: 100vw;
-    width: 100vw;
-  }
-
-  .goes #output {
     height: 100vw;
     width: 100vw;
   }
@@ -98,10 +88,6 @@ abbr {
 #explore {
   margin-left: 8px;
   top: 7px;
-}
-
-.goes #explore, .goes #time {
-  display: none;
 }
 
 .extension-only {

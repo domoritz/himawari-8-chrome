@@ -10,7 +10,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Features of the extension
 
-* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/), images from the EPIC camera on the [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite, and [GOES 13](https://en.wikipedia.org/wiki/GOES_13), [GOES 15](https://en.wikipedia.org/wiki/GOES_15) (can only switch in the extension) or [GOES 16](https://en.wikipedia.org/wiki/GOES_16) (can only switch in the extension).
+* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/), images from the EPIC camera on the [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite, and [GOES 16](https://en.wikipedia.org/wiki/GOES_16) (can only switch in the extension).
 * Loads the latest image, updates automatically.
 * Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads tiles.
 * Uses Google's caching to take the load from the image servers
@@ -23,6 +23,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Changelog
 
+0.14.0 Remove GOES 13 adn 15 as NASA does not support them anymore.
 0.13.1 Faster time ago update.
 0.12.0 Improve animation initialization.
 0.11.1 Faster animation

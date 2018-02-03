@@ -6,9 +6,6 @@ import {utcFormat, utcParse} from "d3-time-format";
 const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
 const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
-const GOES_EAST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeseast/overview2/color_lrg/latestfull.jpg";
-const GOES_WEST_URL = "http://goes.gsfc.nasa.gov/goescolor/goeswest/overview2/color_lrg/latestfull.jpg";
-
 const SLIDER_BASE_URL = "http://rammb-slider.cira.colostate.edu/data/";
 
 // links to online image explorers
@@ -22,12 +19,10 @@ const INFRARED = "INFRARED_FULL";
 const VISIBLE_LIGHT = "D531106";
 const DSCOVR_EPIC = "EPIC";
 const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
-const GOES_EAST = "GOES_EAST";  // GOES 13
-const GOES_WEST = "GOES_WEST";  // GOES 15
 const GOES_16 = "GOES_16";
 
 type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC |
-  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_EAST | typeof GOES_WEST | typeof GOES_16;
+  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16;
 
 const HIMAWARI_WIDTH = 550;
 const HIMAWARI_BLOCK_SIZES = [1, 4, 8, 16, 20];
@@ -36,7 +31,6 @@ const SLIDER_WIDTH = 678;
 const SLIDER_BLOCK_SIZES = [1, 2, 4, 8, 16];
 
 const DSCOVR_WIDTH = 2048;
-const GOES_WIDTH = 3072;
 
 const IMAGE_QUALITY = 0.9;
 const RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
@@ -268,10 +262,6 @@ function setBodyClass(imageType: ImageType) {
     case GOES_16:
       document.body.classList.add("goes16");
       break;
-    case GOES_EAST:
-    case GOES_WEST:
-      document.body.classList.add("goes");
-      break;
     default:
       console.warn("Unknown image type", imageType);
   }
@@ -404,47 +394,6 @@ function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageTyp
   img.src = getCachedUrl(`${DSCOVR_BASE_URL}archive/${type}/${latest.date.getFullYear()}/${month}/${date}/png/${latest.image}.png`);
 }
 
-function setGoesImage(imageType: ImageType) {
-  // if we haven't loaded images before, we want to show progress
-  const key = localStorage.getItem(CACHED_IMAGE_TYPE_KEY);
-  const initialLoad = !key || (key !== GOES_EAST && key !== GOES_WEST);
-
-  // immediately set the type and body class because we are not loading in the background
-  if (initialLoad) {
-    updateStateAndUI(UNKNOWN, imageType);
-  }
-
-  const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  ctx.canvas.width = GOES_WIDTH;
-  ctx.canvas.height = GOES_WIDTH;
-
-  const img = new Image();
-  img.setAttribute("crossOrigin", "anonymous");
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0);
-
-    if (!initialLoad) {
-      // copy canvas into output in one step
-      const output = document.getElementById("output") as HTMLCanvasElement;
-      const outCtx = output.getContext("2d");
-      outCtx.canvas.width = GOES_WIDTH;
-      outCtx.canvas.height = GOES_WIDTH;
-      outCtx.drawImage(canvas, 0, 0);
-    }
-
-    updateStateAndUI(UNKNOWN, imageType);
-
-    // put date and image data in cache
-    const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-    localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, String(UNKNOWN));
-    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
-  };
-
-  img.src = getCachedUrl(imageType === GOES_WEST ? GOES_WEST_URL : GOES_EAST_URL, 60 * 60);
-}
-
 function setSliderImages(date: Date, imageType: ImageType) {
   // no need to set images if we have up to date images and the image type has not changed
   if (loadedDate && date.getTime() === loadedDate.getTime() && loadedType === imageType) {
@@ -543,10 +492,6 @@ function setLatestImage() {
         case DSCOVR_EPIC:
         case DSCOVR_EPIC_ENHANCED:
           dscovrCallback(options.imageType);
-          break;
-        case GOES_EAST:
-        case GOES_WEST:
-          setGoesImage(options.imageType);
           break;
         case GOES_16:
           sliderCallback(options.imageType);

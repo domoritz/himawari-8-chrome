@@ -6,9 +6,9 @@ export default {
   input: 'src/main.ts',
   output: {
     file: 'bundle.js',
-    format: 'iife'
+    format: 'iife',
+    sourcemap: true
   },
-  sourcemap: true,
   plugins: [
     nodeResolve({
       jsnext: true,
