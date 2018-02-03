@@ -23,7 +23,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Changelog
 
-0.14.0 Remove GOES 13 adn 15 as NASA does not support them anymore.
+0.14.0 Remove GOES 13 and 15 as NASA does not support them anymore.
 0.13.1 Faster time ago update.
 0.12.0 Improve animation initialization.
 0.11.1 Faster animation
