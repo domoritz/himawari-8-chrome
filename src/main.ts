@@ -20,9 +20,10 @@ const VISIBLE_LIGHT = "D531106";
 const DSCOVR_EPIC = "EPIC";
 const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
 const GOES_16 = "GOES_16";
+const GOES_16_NATURAL = "GOES_16_NATURAL";
 
 type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC |
-  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16;
+  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL;
 
 const HIMAWARI_WIDTH = 550;
 const HIMAWARI_BLOCK_SIZES = [1, 4, 8, 16, 20];
@@ -98,16 +99,18 @@ function himawariURLs(options: {date: Date, type?: ImageType, blocks: number}) {
   };
 }
 
-function sliderURLs(options: {date: Date, blocks: number, level: number}) {
+function sliderURLs(options: {date: Date, type: ImageType, blocks: number, level: number}) {
   const date = options.date;
 
   const blocks = options.blocks;
   const level = options.level;
 
+  const typePath = options.type === GOES_16_NATURAL ? "natural_color" : "geocolor";
+
   const formattedDate = utcFormat("%Y%m%d")(options.date);
   const formattedDateTime = utcFormat("%Y%m%d%H%M%S")(options.date);
 
-  const tilesURL = `${SLIDER_BASE_URL}/imagery/${formattedDate}/goes-16---full_disk/geocolor/${formattedDateTime}/`;
+  const tilesURL = `${SLIDER_BASE_URL}/imagery/${formattedDate}/goes-16---full_disk/${typePath}/${formattedDateTime}/`;
   const tiles: ITile[] = [];
 
   for (let y = 0; y < blocks; y++) {
@@ -260,6 +263,7 @@ function setBodyClass(imageType: ImageType) {
       document.body.classList.add("dscovr");
       break;
     case GOES_16:
+    case GOES_16_NATURAL:
       document.body.classList.add("goes16");
       break;
     default:
@@ -411,6 +415,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
   // get the URLs for all tiles
   const result = sliderURLs({
     date,
+    type: imageType,
     ...getOptimalNumberOfBlocks(SLIDER_WIDTH, SLIDER_BLOCK_SIZES),
   });
 
@@ -494,6 +499,7 @@ function setLatestImage() {
           dscovrCallback(options.imageType);
           break;
         case GOES_16:
+        case GOES_16_NATURAL:
           sliderCallback(options.imageType);
           break;
         case INFRARED:
@@ -580,6 +586,7 @@ document.getElementById("explore").addEventListener("click", () => {
       window.open(DSCOVR_EXPLORER_ENHANCED, "_self");
       break;
     case GOES_16:
+    case GOES_16_NATURAL:
       window.open(SLIDER_EXPLORER, "_self");
       break;
     case INFRARED:
