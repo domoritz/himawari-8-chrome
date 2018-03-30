@@ -33,7 +33,7 @@ const SLIDER_BLOCK_SIZES = [1, 2, 4, 8, 16];
 
 const DSCOVR_WIDTH = 2048;
 
-const IMAGE_QUALITY = 0.85;
+const IMAGE_QUALITY = 0.95;
 const RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
 const RELOAD_TIME_INTERVAL = 10 * 1000;  // 10 seconds
 
@@ -455,11 +455,19 @@ function setSliderImages(date: Date, imageType: ImageType) {
 }
 
 /** Cache the image. */
-function storeCanvas(date: Date, imageType: ImageType) {
+function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) {
   // put date and image data in cache
   const canvas = document.getElementById("output") as HTMLCanvasElement;
-  const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-  localStorage.setItem(IMAGE_DATA_KEY, imageData);
+  const imageData = canvas.toDataURL("image/jpeg", quality);
+  try {
+    localStorage.setItem(IMAGE_DATA_KEY, imageData);
+  } catch {
+    // try again with lower quality
+    if (quality > 50) {
+      console.warn(`Couldn't store image. Trying again with lower image quality of ${quality}`);
+      return storeCanvas(date, imageType, quality - 5);
+    }
+  }
   localStorage.setItem(CACHED_DATE_KEY, date.toString());
   localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
 }
