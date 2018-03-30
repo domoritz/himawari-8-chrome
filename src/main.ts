@@ -32,7 +32,7 @@ const SLIDER_BLOCK_SIZES = [1, 2, 4, 8, 16];
 
 const DSCOVR_WIDTH = 2048;
 
-const IMAGE_QUALITY = 0.9;
+const IMAGE_QUALITY = 0.85;
 const RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
 const RELOAD_TIME_INTERVAL = 10 * 1000;  // 10 seconds
 
@@ -338,11 +338,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
 
     updateStateAndUI(date, imageType);
 
-    // put date and image data in cache
-    const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-    localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, date.toString());
-    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
+    storeCanvas(date, imageType);
   });
 }
 
@@ -381,11 +377,7 @@ function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageTyp
 
     updateStateAndUI(latest.date, imageType);
 
-    // put date and image data in cache
-    const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-    localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, latest.date.toString());
-    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
+    storeCanvas(latest.date, imageType);
   };
 
   const type = imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural";
@@ -453,12 +445,18 @@ function setSliderImages(date: Date, imageType: ImageType) {
 
     updateStateAndUI(date, imageType);
 
-    // put date and image data in cache
-    const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
-    localStorage.setItem(IMAGE_DATA_KEY, imageData);
-    localStorage.setItem(CACHED_DATE_KEY, date.toString());
-    localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
+    storeCanvas(date, imageType);
   });
+}
+
+/** Cache the image. */
+function storeCanvas(date: Date, imageType: ImageType) {
+  // put date and image data in cache
+  const canvas = document.getElementById("output") as HTMLCanvasElement;
+  const imageData = canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+  localStorage.setItem(IMAGE_DATA_KEY, imageData);
+  localStorage.setItem(CACHED_DATE_KEY, date.toString());
+  localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
 }
 
 /* Asynchronously load latest image(s) date and images for that date */
