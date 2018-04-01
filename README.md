@@ -23,6 +23,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Changelog
 
+0.15.0 Add GOES 16 natural image thanks to @TheNeuralBit
 0.14.0 Remove GOES 13 and 15 as NASA does not support them anymore.
 0.13.1 Faster time ago update.
 0.12.0 Improve animation initialization.
