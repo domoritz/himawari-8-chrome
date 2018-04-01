@@ -27,10 +27,10 @@
     "build": "rollup -c",
     "watch": "rollup -w -c",
     "start": "python -m SimpleHTTPServer",
-    "prepack": "npm run build",
-    "pack": "npm run pack:firefox && npm run pack:chrome",
-    "pack:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
-    "pack:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "prebundle": "npm run build",
+    "bundle": "npm run bundle:firefox && npm run bundle:chrome",
+    "bundle:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
+    "bundle:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
     "lint": "tslint -p ."
   },
   "repository": {
