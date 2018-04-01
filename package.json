@@ -1,6 +1,6 @@
 {
   "name": "himawari",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome or Firefox.",
   "main": "index.js",
   "dependencies": {
