@@ -4,7 +4,7 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 
 🛰 **Get the extension from the [Chrome web store](https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm) or the [Firefox Add-on gallery](https://addons.mozilla.org/en-US/firefox/addon/satellite-new-tab-page/)**.
 
-![screenshot](https://domoritz.github.io/himawari-8-chrome/screenshot.png "Screenshot of the browser with the new tab page")
+![screenshot](https://raw.githubusercontent.com/domoritz/himawari-8-chrome/gh-pages/screenshot.png "Screenshot of the browser with the new tab page")
 
 This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ungoldman/himawari-urls.
 
