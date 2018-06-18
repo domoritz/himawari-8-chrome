@@ -1,12 +1,12 @@
-import nodeResolve from 'rollup-plugin-node-resolve';
-import typescript from 'rollup-plugin-typescript2';
-import uglify from 'rollup-plugin-uglify';
+import nodeResolve from "rollup-plugin-node-resolve";
+import typescript from "rollup-plugin-typescript2";
+import { uglify } from "rollup-plugin-uglify";
 
 export default {
-  input: 'src/main.ts',
+  input: "src/index.ts",
   output: {
-    file: 'bundle.js',
-    format: 'iife',
+    file: "bundle.js",
+    format: "iife",
     sourcemap: true
   },
   plugins: [

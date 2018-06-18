@@ -7,8 +7,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"]
   },
+  "files": ["src/index.ts"],
   "include": [
     "src/**/*"
   ]

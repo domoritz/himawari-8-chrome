@@ -1,6 +1,6 @@
-import {queue} from "d3-queue";
-import {json} from "d3-request";
-import {utcFormat, utcParse} from "d3-time-format";
+import { queue } from "d3-queue";
+import { json } from "d3-request";
+import { utcFormat, utcParse } from "d3-time-format";
 
 // base url for images
 const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
