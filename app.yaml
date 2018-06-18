@@ -1,0 +1,11 @@
+runtime: python
+threadsafe: true
+
+handlers:
+- url: /.*
+  script: main.app
+
+env: flex
+
+runtime_config:
+    python_version: 3
