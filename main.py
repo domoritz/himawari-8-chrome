@@ -8,7 +8,7 @@ from google.appengine.api import urlfetch
 import webapp2
 
 
-URL = "http://oiswww.eumetsat.org/IPPS/html/MSG/RGB/NATURALCOLOR/FULLRESOLUTION/"
+URL = "http://oiswww.eumetsat.org/IPPS/html/MSGIODC/RGB/NATURALCOLOR/FULLRESOLUTION/"
 
 
 class MainPage(webapp2.RequestHandler):
