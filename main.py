@@ -17,7 +17,7 @@ class MainPage(webapp2.RequestHandler):
         try:
             result = urlfetch.fetch(URL)
             if result.status_code == 200:
-                return re.search(r'array_nom_imagen\[0\]="(\w*)"', result.content).group(0)
+                return re.search(r'array_nom_imagen\[0\]="(\w*)"', result.content).group(1)
             else:
                 self.response.status_code = result.status_code
         except urlfetch.Error:
