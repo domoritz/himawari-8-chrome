@@ -64,6 +64,6 @@ Have a look at the [latest image from Himawari 8](https://domoritz.github.io/him
 
 ## Develop
 
-Run `npm run dev` then open [localhost:8000](http://localhost:8000/) and start developing. Run `pack.sh` to pack the Chrome extension.
+Install the latest dependencies with [`yarn`](https://yarnpkg.com/). Then run `yarn watch` in one terminal to compile the bundle in the background. At this point you can choose between two methods to view the page. First, you can run `yarn start` to start the webserver at [localhost:8000](http://localhost:8000/). Note that if you are using this method, you cannot access some browser extension specific features. Second, install the extension as an [unpacked extension into Chrome](https://developer.chrome.com/extensions/getstarted) or Firefox and open a new tab. The extension should load in development mode.
 
-To make a release, update the version number in `package.json` and `manifest.json`. Then commit the changes and tag it. Lastly, pack the extension, push the code and tags, and deploy on the chrome app store.
+To make a release, update the version number in `package.json` and `manifest.*.json`. Then commit the changes and tag it. Lastly, pack the extension (`yarn bundle`), push the code and tags, and deploy on the chrome app store.
