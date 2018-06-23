@@ -8,6 +8,8 @@ const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
 const SLIDER_BASE_URL = "http://rammb-slider.cira.colostate.edu/data/";
 
+const METEOSAT_BASE_URL = "https://meteosat-url.appspot.com/";
+
 // links to online image explorers
 const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
 const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
@@ -195,10 +197,18 @@ function getLatestSliderDate(cb: (date: Date) => void) {
   });
 }
 
-// TODO: Finish, static
+// TODO: Finish
 function getLatestMeteosatDate() {
-  utcParse("%Y%m%d%H%M%S")("20000101000000");
-  window.alert("When was last FD?");
+  json(`${METEOSAT_BASE_URL}msg`, (error, data: {url: string, date: string}) => {
+    /* Throws:
+     * Failed to load https://meteosat-url.appspot.com/msg: No
+     * 'Access-Control-Allow-Origin' header is present on the requested
+     * resource. Origin 'chrome-extension://nbcijgaiaigkfephnhbhkaepnfkhpgkl'
+     * is therefore not allowed access.
+     */
+    if (error) { throw error; }
+    window.alert("When was last FD? " + data.date);
+  });
 }
 
 /**
