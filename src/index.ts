@@ -13,6 +13,9 @@ const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D5
 const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
 const DSCOVR_EXPLORER_ENHANCED = DSCOVR_EXPLORER + "/enhanced";
 const SLIDER_EXPLORER = "http://rammb-slider.cira.colostate.edu/";
+const METEOSAT_EXPLORER = "http://fullstackembedded.com/";
+// http://oiswww.eumetsat.org/IPPS/html/MSG/RGB/NATURALCOLOR/FULLRESOLUTION/index.htm
+// http://oiswww.eumetsat.org/IPPS/html/MSGIODC/RGB/NATURALCOLOR/FULLDISC/index.htm
 
 // image types
 const INFRARED = "INFRARED_FULL";
@@ -21,9 +24,12 @@ const DSCOVR_EPIC = "EPIC";
 const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
 const GOES_16 = "GOES_16";
 const GOES_16_NATURAL = "GOES_16_NATURAL";
+const METEOSAT = "METEOSAT";
+const METEOSAT_IODC = "METEOSAT_IODC";
 
 type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC |
-  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL;
+  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL |
+  typeof METEOSAT | typeof METEOSAT_IODC;
 
 const HIMAWARI_WIDTH = 550;
 const HIMAWARI_BLOCK_SIZES = [1, 4, 8, 16, 20];
@@ -132,6 +138,8 @@ function sliderURLs(options: {date: Date, type: ImageType, blocks: number, level
   };
 }
 
+/// TODO: meteosatURLs
+
 /**
  * Create a cached URL thanks to our friends at Google.
  * See https://gist.github.com/carlo/5379498
@@ -185,6 +193,12 @@ function getLatestSliderDate(cb: (date: Date) => void) {
     if (error) { throw error; }
     cb(utcParse("%Y%m%d%H%M%S")(data.timestamps_int[0]));
   });
+}
+
+// TODO: Finish, static
+function getLatestMeteosatDate() {
+  utcParse("%Y%m%d%H%M%S")("20000101000000");
+  window.alert("When was last FD?");
 }
 
 /**
@@ -252,6 +266,7 @@ function setBodyClass(imageType: ImageType) {
   document.body.classList.remove("dscovr");
   document.body.classList.remove("goes");
   document.body.classList.remove("goes16");
+  document.body.classList.remove("meteosat");
 
   switch (imageType) {
     case INFRARED:
@@ -265,6 +280,10 @@ function setBodyClass(imageType: ImageType) {
     case GOES_16:
     case GOES_16_NATURAL:
       document.body.classList.add("goes16");
+      break;
+    case METEOSAT:
+    case METEOSAT_IODC:
+      document.body.classList.add("meteosat");
       break;
     default:
       console.warn("Unknown image type", imageType);
@@ -296,6 +315,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
     updateStateAndUI(date, imageType);
   }
 
+  // TODO: Redundant to here?
   // get the URLs for all tiles
   const result = himawariURLs({
     blocks: getOptimalNumberOfBlocks(HIMAWARI_WIDTH, HIMAWARI_BLOCK_SIZES).blocks,
@@ -454,6 +474,12 @@ function setSliderImages(date: Date, imageType: ImageType) {
   });
 }
 
+/*
+function setMeteosatImages(date: Date, imageType: ImageType) {
+  window.alert("Foobar" + date + imageType);
+}
+*/
+
 /** Cache the image. */
 function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) {
   // put date and image data in cache
@@ -497,6 +523,12 @@ function setLatestImage() {
     });
   }
 
+  function meteosatCallback(imageType: ImageType) {
+    // getLatestMeteosatDate(imageType, (latest: Date) => {
+    console.warn(imageType);
+    getLatestMeteosatDate();
+  }
+
   if (isExtension) {
     browser.storage.sync.get(DEFAULT_OPTIONS).then(options => {
       switch (options.imageType) {
@@ -507,6 +539,10 @@ function setLatestImage() {
         case GOES_16:
         case GOES_16_NATURAL:
           sliderCallback(options.imageType);
+          break;
+        case METEOSAT:
+        case METEOSAT_IODC:
+          meteosatCallback(options.imageType);
           break;
         case INFRARED:
         case VISIBLE_LIGHT:
@@ -598,6 +634,11 @@ document.getElementById("explore").addEventListener("click", () => {
     case INFRARED:
     case VISIBLE_LIGHT:
       window.open(HIMAWARI_EXPLORER, "_self");
+      break;
+    case METEOSAT:
+    case METEOSAT_IODC:
+      // TODO: Complete
+      window.open(METEOSAT_EXPLORER, "_self");
       break;
     default:
       window.alert("No explorer found.");
