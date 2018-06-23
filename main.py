@@ -37,6 +37,7 @@ class Handler(webapp2.RequestHandler):
             memcache.add(name, data, 120)
 
         self.response.headers['Content-Type'] = 'text/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.write(data)
 
 class MSGIODCHandler(Handler):
