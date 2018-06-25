@@ -8,17 +8,12 @@ const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
 const SLIDER_BASE_URL = "http://rammb-slider.cira.colostate.edu/data/";
 
-// TODO: Not base URL, since doesn't use same domain for metadata and data
-// retrieval, see implementation for Himawari, line 174
-//const METEOSAT_BASE_URL = "https://meteosat-url.appspot.com/";
-
 // links to online image explorers
 const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
 const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
 const DSCOVR_EXPLORER_ENHANCED = DSCOVR_EXPLORER + "/enhanced";
 const SLIDER_EXPLORER = "http://rammb-slider.cira.colostate.edu/";
-const METEOSAT_EXPLORER = "http://fullstackembedded.com/";
-// http://oiswww.eumetsat.org/IPPS/html/MSG/RGB/NATURALCOLOR/FULLRESOLUTION/index.htm
+const METEOSAT_EXPLORER = "http://oiswww.eumetsat.org/IPPS/html/MSG/IMAGERY/";
 // http://oiswww.eumetsat.org/IPPS/html/MSGIODC/RGB/NATURALCOLOR/FULLDISC/index.htm
 
 // image types
@@ -42,6 +37,8 @@ const SLIDER_WIDTH = 678;
 const SLIDER_BLOCK_SIZES = [1, 2, 4, 8, 16];
 
 const DSCOVR_WIDTH = 2048;
+
+const METEOSAT_WIDTH = 3712;
 
 const IMAGE_QUALITY = 0.95;
 const RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
@@ -142,8 +139,6 @@ function sliderURLs(options: {date: Date, type: ImageType, blocks: number, level
   };
 }
 
-/// TODO: meteosatURLs
-
 /**
  * Create a cached URL thanks to our friends at Google.
  * See https://gist.github.com/carlo/5379498
@@ -199,12 +194,23 @@ function getLatestSliderDate(cb: (date: Date) => void) {
   });
 }
 
-// TODO: Finish. Must take image type for differentiating: Prime vs IODC
-function getLatestMeteosatDate(imageType: ImageType, cb: (date: Date) => void) {
+  /*
+function foo(imageType: ImageType) {
   json(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`, (error, data: {url: string, date: string}) => {
     if (error) { throw error; }
-    window.alert(data.url);
-    cb(utcParse("%Y-%m-%d %H:%M:%s")(data.date));
+    return data;
+  });
+  return data;
+}
+   */
+
+function getLatestMeteosatDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
+  json(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`, (error, data: {url: string, date: string}) => {
+    if (error) { throw error; }
+    cb({
+      date: utcParse("%Y-%m-%d %H:%M:%S")(data.date),
+      image: data.url,
+    });
   });
 }
 
@@ -322,7 +328,6 @@ function setHimawariImages(date: Date, imageType: ImageType) {
     updateStateAndUI(date, imageType);
   }
 
-  // TODO: Redundant to here?
   // get the URLs for all tiles
   const result = himawariURLs({
     blocks: getOptimalNumberOfBlocks(HIMAWARI_WIDTH, HIMAWARI_BLOCK_SIZES).blocks,
@@ -481,11 +486,48 @@ function setSliderImages(date: Date, imageType: ImageType) {
   });
 }
 
-/*
-function setMeteosatImages(date: Date, imageType: ImageType) {
-  window.alert("Foobar" + date + imageType);
+function setMeteosatImages(latest: {date: Date, image: string}, imageType: ImageType) {
+  // TODO: Seems to be a lot of duplication here, should we factor this out of
+  // the set_xxx_Images functions?
+  // no need to set images if we have up to date images and the image type has not changed
+  if (loadedDate && latest.date.getTime() === loadedDate.getTime() && loadedType === imageType) {
+    return;
+  }
+
+  // if we haven't loaded images before, we want to show progress
+  const initialLoad = !localStorage.getItem(CACHED_DATE_KEY);
+
+  // immediately set the type and body class because we are not loading in the background
+  if (initialLoad) {
+    updateStateAndUI(latest.date, imageType);
+  }
+
+  const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.canvas.width = METEOSAT_WIDTH;
+  ctx.canvas.height = METEOSAT_WIDTH;
+
+  const img = new Image();
+  img.setAttribute("crossOrigin", "anonymous");
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+
+    if (!initialLoad) {
+      // copy canvas into output in one step
+      const output = document.getElementById("output") as HTMLCanvasElement;
+      const outCtx = output.getContext("2d");
+      outCtx.canvas.width = METEOSAT_WIDTH;
+      outCtx.canvas.height = METEOSAT_WIDTH;
+      outCtx.drawImage(canvas, 0, 0);
+    }
+
+    updateStateAndUI(latest.date, imageType);
+
+    storeCanvas(latest.date, imageType);
+  };
+
+  img.src = getCachedUrl(`${latest.image}`);
 }
-*/
 
 /** Cache the image. */
 function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) {
@@ -531,9 +573,8 @@ function setLatestImage() {
   }
 
   function meteosatCallback(imageType: ImageType) {
-    getLatestMeteosatDate(imageType, (latest: Date) => {
-      window.alert(latest);
-      //setMeteosatImages(latest, imageType);
+    getLatestMeteosatDate(imageType, (latest: {date: Date, image: string}) => {
+      setMeteosatImages(latest, imageType);
     });
   }
 
@@ -645,7 +686,6 @@ document.getElementById("explore").addEventListener("click", () => {
       break;
     case METEOSAT:
     case METEOSAT_IODC:
-      // TODO: Complete
       window.open(METEOSAT_EXPLORER, "_self");
       break;
     default:
