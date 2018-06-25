@@ -14,7 +14,6 @@ const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
 const DSCOVR_EXPLORER_ENHANCED = DSCOVR_EXPLORER + "/enhanced";
 const SLIDER_EXPLORER = "http://rammb-slider.cira.colostate.edu/";
 const METEOSAT_EXPLORER = "http://oiswww.eumetsat.org/IPPS/html/MSG/IMAGERY/";
-// http://oiswww.eumetsat.org/IPPS/html/MSGIODC/RGB/NATURALCOLOR/FULLDISC/index.htm
 
 // image types
 const INFRARED = "INFRARED_FULL";
