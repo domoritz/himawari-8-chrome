@@ -8,7 +8,9 @@ const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
 const SLIDER_BASE_URL = "http://rammb-slider.cira.colostate.edu/data/";
 
-const METEOSAT_BASE_URL = "https://meteosat-url.appspot.com/";
+// TODO: Not base URL, since doesn't use same domain for metadata and data
+// retrieval, see implementation for Himawari, line 174
+//const METEOSAT_BASE_URL = "https://meteosat-url.appspot.com/";
 
 // links to online image explorers
 const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
@@ -197,17 +199,12 @@ function getLatestSliderDate(cb: (date: Date) => void) {
   });
 }
 
-// TODO: Finish
-function getLatestMeteosatDate() {
-  json(`${METEOSAT_BASE_URL}msg`, (error, data: {url: string, date: string}) => {
-    /* Throws:
-     * Failed to load https://meteosat-url.appspot.com/msg: No
-     * 'Access-Control-Allow-Origin' header is present on the requested
-     * resource. Origin 'chrome-extension://nbcijgaiaigkfephnhbhkaepnfkhpgkl'
-     * is therefore not allowed access.
-     */
+// TODO: Finish. Must take image type for differentiating: Prime vs IODC
+function getLatestMeteosatDate(imageType: ImageType, cb: (date: Date) => void) {
+  json(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`, (error, data: {url: string, date: string}) => {
     if (error) { throw error; }
-    window.alert("When was last FD? " + data.date);
+    window.alert(data.url);
+    cb(utcParse("%Y-%m-%d %H:%M:%s")(data.date));
   });
 }
 
@@ -534,9 +531,10 @@ function setLatestImage() {
   }
 
   function meteosatCallback(imageType: ImageType) {
-    // getLatestMeteosatDate(imageType, (latest: Date) => {
-    console.warn(imageType);
-    getLatestMeteosatDate();
+    getLatestMeteosatDate(imageType, (latest: Date) => {
+      window.alert(latest);
+      //setMeteosatImages(latest, imageType);
+    });
   }
 
   if (isExtension) {
