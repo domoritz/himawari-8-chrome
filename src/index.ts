@@ -516,9 +516,10 @@ function setMeteosatImages(latest: {date: Date, image: string}, imageType: Image
       // copy canvas into output in one step
       const output = document.getElementById("output") as HTMLCanvasElement;
       const outCtx = output.getContext("2d");
-      outCtx.canvas.width = METEOSAT_WIDTH;
-      outCtx.canvas.height = METEOSAT_WIDTH;
-      outCtx.drawImage(canvas, 0, 0);
+      // Feels a bit like a cludge
+      outCtx.canvas.width = window.innerWidth;
+      outCtx.canvas.height = window.innerHeight;
+      outCtx.drawImage(canvas, window.innerWidth /2 - window.innerHeight / 2, 0, window.innerHeight, window.innerHeight);
     }
 
     updateStateAndUI(latest.date, imageType);
