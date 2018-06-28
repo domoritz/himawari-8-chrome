@@ -193,16 +193,6 @@ function getLatestSliderDate(cb: (date: Date) => void) {
   });
 }
 
-  /*
-function foo(imageType: ImageType) {
-  json(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`, (error, data: {url: string, date: string}) => {
-    if (error) { throw error; }
-    return data;
-  });
-  return data;
-}
-   */
-
 function getLatestMeteosatDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
   json(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`, (error, data: {url: string, date: string}) => {
     if (error) { throw error; }
