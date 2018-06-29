@@ -38,6 +38,7 @@ const SLIDER_BLOCK_SIZES = [1, 2, 4, 8, 16];
 const DSCOVR_WIDTH = 2048;
 
 const METEOSAT_WIDTH = 3712;
+const METEOSAT_HEIGHT = 3630;  // cut off white bar, credit in options
 
 const IMAGE_QUALITY = 0.95;
 const RELOAD_INTERVAL = 1 * 60 * 1000;  // 1 minutes
@@ -476,8 +477,6 @@ function setSliderImages(date: Date, imageType: ImageType) {
 }
 
 function setMeteosatImages(latest: {date: Date, image: string}, imageType: ImageType) {
-  // TODO: Seems to be a lot of duplication here, should we factor this out of
-  // the set_xxx_Images functions?
   // no need to set images if we have up to date images and the image type has not changed
   if (loadedDate && latest.date.getTime() === loadedDate.getTime() && loadedType === imageType) {
     return;
@@ -494,7 +493,7 @@ function setMeteosatImages(latest: {date: Date, image: string}, imageType: Image
   const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width = METEOSAT_WIDTH;
-  ctx.canvas.height = METEOSAT_WIDTH;
+  ctx.canvas.height = METEOSAT_HEIGHT;
 
   const img = new Image();
   img.setAttribute("crossOrigin", "anonymous");
@@ -506,7 +505,7 @@ function setMeteosatImages(latest: {date: Date, image: string}, imageType: Image
       const output = document.getElementById("output") as HTMLCanvasElement;
       const outCtx = output.getContext("2d");
       outCtx.canvas.width = METEOSAT_WIDTH;
-      outCtx.canvas.height = METEOSAT_WIDTH;
+      outCtx.canvas.height = METEOSAT_HEIGHT;
       outCtx.drawImage(canvas, 0, 0);
     }
 

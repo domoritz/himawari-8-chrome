@@ -59,6 +59,11 @@ abbr {
     height: 90vh;
     width: 90vh;
   }
+
+  .meteosat #output {
+    height: 90vh;
+    width: 90vh;
+  }
 }
 @media screen and (orientation:portrait) {
   .himawari #output {
@@ -72,6 +77,11 @@ abbr {
   }
 
   .goes16 #output {
+    height: 90vw;
+    width: 90vw;
+  }
+
+  .meteosat #output {
     height: 90vw;
     width: 90vw;
   }
