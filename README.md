@@ -10,7 +10,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Features of the extension
 
-* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/), images from the EPIC camera on the [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite, [GOES 16](https://en.wikipedia.org/wiki/GOES_16) and [Meteosat](https://www.eumetsat.int/website/home/Satellites/CurrentSatellites/Meteosat/index.html) (can only switch in the extension).
+* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/), images from the EPIC camera on the [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite, [GOES 16](https://en.wikipedia.org/wiki/GOES_16), and [Meteosat](https://www.eumetsat.int/website/home/Satellites/CurrentSatellites/Meteosat/index.html) (can only switch in the extension).
 * Loads the latest image, updates automatically.
 * Automatically loads images at the optimal resolution (including retina resolutions). If more than one image is needed, the app automatically downloads tiles.
 * Uses Google's caching to take the load from the image servers.
