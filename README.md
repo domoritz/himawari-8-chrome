@@ -25,6 +25,7 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 ## Changelog
 
 ```
+0.16.1 Store large images with reduced quaility until they fit
 0.16.0 Add Meteosat images thanks to @erget
 0.15.0 Add GOES 16 natural image thanks to @TheNeuralBit
 0.14.0 Remove GOES 13 and 15 as NASA does not support them anymore
