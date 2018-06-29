@@ -526,9 +526,10 @@ function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) 
     localStorage.setItem(IMAGE_DATA_KEY, imageData);
   } catch {
     // try again with lower quality
-    if (quality > 50) {
+    if (quality > 0.5) {
+      quality -= 0.05;
       console.warn(`Couldn't store image. Trying again with lower image quality of ${quality}`);
-      return storeCanvas(date, imageType, quality - 5);
+      return storeCanvas(date, imageType, quality);
     }
   }
   localStorage.setItem(CACHED_DATE_KEY, date.toString());
