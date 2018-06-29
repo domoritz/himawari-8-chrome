@@ -10,27 +10,29 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 
 ## Features of the extension
 
-* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/), images from the EPIC camera on the [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite, and [GOES 16](https://en.wikipedia.org/wiki/GOES_16) (can only switch in the extension).
+* Switch between visible light and infrared images from [Himawari 8](http://himawari8.nict.go.jp/), images from the EPIC camera on the [DSCOVR](http://www.nesdis.noaa.gov/DSCOVR/) satellite, [GOES 16](https://en.wikipedia.org/wiki/GOES_16) and [Meteosat](https://www.eumetsat.int/website/home/Satellites/CurrentSatellites/Meteosat/index.html) (can only switch in the extension).
 * Loads the latest image, updates automatically.
-* Automatically loads images at the optimal resolution (incl retina resolutions). If more than one image is needed, automatically downloads tiles.
-* Uses Google's caching to take the load from the image servers
-* Caches last version in local storage (compressed jpeg) and immediately displays it when you load the page. Then loads the latest image.
+* Automatically loads images at the optimal resolution (including retina resolutions). If more than one image is needed, the app automatically downloads tiles.
+* Uses Google's caching to take the load from the image servers.
+* Caches last version in local storage (compressed JPEG) and immediately displays it when you load the page. Then loads the latest image.
 * JSON proxy on AppEngine to get around same origin policy. The code is on the [proxy branch](https://github.com/domoritz/himawari-8-chrome/tree/proxy).
-* Full offline support
+* To get the latest image URL for Meteosat, we use a [web scraper](https://github.com/domoritz/himawari-8-chrome/tree/meteosat).
+* Full offline support.
 * Images are drawn on a canvas so that we can cache and load it easily.
 * The Earth always stay centered, thanks to CSS magic.
-* Earth is animated when it moves in
+* Earth is animated when it moves in (optional).
 
 ## Changelog
 
 ```
+0.16.0 Add Meteosat images thanks to @erget
 0.15.0 Add GOES 16 natural image thanks to @TheNeuralBit
-0.14.0 Remove GOES 13 and 15 as NASA does not support them anymore.
-0.13.1 Faster time ago update.
-0.12.0 Improve animation initialization.
+0.14.0 Remove GOES 13 and 15 as NASA does not support them anymore
+0.13.1 Faster time ago update
+0.12.0 Improve animation initialization
 0.11.1 Faster animation
-0.11.0 Add GOES 16 and animation.
-0.10.0 Firefox support.
+0.11.0 Add GOES 16 and animation
+0.10.0 Firefox support
 0.9.0 Fix web extension compatibility. Immediately load new image when settings change.
 0.8.0 Compatible with web extensions for Firefox
 0.6.1, 0.7.0: Fix GOES caching
