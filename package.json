@@ -7,19 +7,19 @@
     "d3-queue": "^3.0.7",
     "d3-request": "^1.0.6",
     "d3-time-format": "^2.1.1",
-    "webextension-polyfill": "^0.2.1"
+    "webextension-polyfill": "^0.3.0"
   },
   "devDependencies": {
     "@types/d3-queue": "^3.0.6",
     "@types/d3-request": "^1.0.2",
     "@types/d3-time-format": "^2.1.0",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-typescript2": "^0.15.0",
+    "rollup-plugin-typescript2": "^0.16.1",
     "rollup-plugin-uglify": "^4.0.0",
     "rollup-watch": "^4.3.1",
-    "rollup": "^0.60.7",
-    "tslint": "^5.10.0",
-    "typescript": "^2.9.2",
+    "rollup": "^0.63.4",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1",
     "web-ext-types": "^2.1.0"
   },
   "scripts": {
