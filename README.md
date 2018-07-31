@@ -11,11 +11,11 @@ This is a Google AppEngine application running at https://himawari-8.appspot.com
 
 ## Run
 
-Install AppEngine for golang and then run `dev_appserver.py app.yaml` or `goapp serve`.
+Install AppEngine for golang and then run `dev_appserver.py app.yaml`.
 
 ## Deploy
 
-Run `goapp deploy`.
+Run `gcloud app deploy --project=himawari-8`.
 
 ## Try
 
