@@ -55,7 +55,7 @@ abbr {
     width: 100vh;
   }
 
-  .goes16 #output {
+  .goes #output {
     height: 90vh;
     width: 90vh;
   }
@@ -76,7 +76,7 @@ abbr {
     width: 100vw;
   }
 
-  .goes16 #output {
+  .goes #output {
     height: 90vw;
     width: 90vw;
   }

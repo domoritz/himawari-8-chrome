@@ -22,11 +22,12 @@ const DSCOVR_EPIC = "EPIC";
 const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
 const GOES_16 = "GOES_16";
 const GOES_16_NATURAL = "GOES_16_NATURAL";
+const GOES_17 = "GOES_17";
 const METEOSAT = "METEOSAT";
 const METEOSAT_IODC = "METEOSAT_IODC";
 
 type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC |
-  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL |
+  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL| typeof GOES_17 |
   typeof METEOSAT | typeof METEOSAT_IODC;
 
 const HIMAWARI_WIDTH = 550;
@@ -112,12 +113,22 @@ function sliderURLs(options: {date: Date, type: ImageType, blocks: number, level
   const blocks = options.blocks;
   const level = options.level;
 
-  const typePath = options.type === GOES_16_NATURAL ? "natural_color" : "geocolor";
+  const typePath = {
+    GOES_16: "geocolor",
+    GOES_16_NATURAL: "natural_color",
+    GOES_17: "geocolor",
+  }[options.type];
+
+  const which = {
+    GOES_16: 16,
+    GOES_16_NATURAL: 16,
+    GOES_17: 17,
+  }[options.type];
 
   const formattedDate = utcFormat("%Y%m%d")(options.date);
   const formattedDateTime = utcFormat("%Y%m%d%H%M%S")(options.date);
 
-  const tilesURL = `${SLIDER_BASE_URL}/imagery/${formattedDate}/goes-16---full_disk/${typePath}/${formattedDateTime}/`;
+  const tilesURL = `${SLIDER_BASE_URL}imagery/${formattedDate}/goes-${which}---full_disk/${typePath}/${formattedDateTime}/`;
   const tiles: ITile[] = [];
 
   for (let y = 0; y < blocks; y++) {
@@ -187,8 +198,14 @@ function getLatestDscovrDate(imageType: ImageType, cb: (latest: {date: Date, ima
     });
 }
 
-function getLatestSliderDate(cb: (date: Date) => void) {
-  json(`${SLIDER_BASE_URL}json/goes-16/full_disk/geocolor/latest_times.json`, (error, data: {timestamps_int: string[]}) => {
+function getLatestSliderDate(imageType: ImageType, cb: (date: Date) => void) {
+  const which = {
+    GOES_16: 16,
+    GOES_16_NATURAL: 16,
+    GOES_17: 17,
+  }[imageType];
+
+  json(`${SLIDER_BASE_URL}json/goes-${which}/full_disk/geocolor/latest_times.json`, (error, data: {timestamps_int: string[]}) => {
     if (error) { throw error; }
     cb(utcParse("%Y%m%d%H%M%S")(data.timestamps_int[0]));
   });
@@ -282,7 +299,8 @@ function setBodyClass(imageType: ImageType) {
       break;
     case GOES_16:
     case GOES_16_NATURAL:
-      document.body.classList.add("goes16");
+    case GOES_17:
+      document.body.classList.add("goes");
       break;
     case METEOSAT:
     case METEOSAT_IODC:
@@ -433,7 +451,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
     ...getOptimalNumberOfBlocks(SLIDER_WIDTH, SLIDER_BLOCK_SIZES),
   });
 
-  const pixels = result.blocks * HIMAWARI_WIDTH;
+  const pixels = result.blocks * SLIDER_WIDTH;
 
   const canvas = initialLoad ? document.getElementById("output") as HTMLCanvasElement : document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
@@ -447,7 +465,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
     const img = new Image();
     img.setAttribute("crossOrigin", "anonymous");
     img.onload = () => {
-      ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
+      ctx.drawImage(img, tile.x * SLIDER_WIDTH, tile.y * SLIDER_WIDTH, SLIDER_WIDTH, SLIDER_WIDTH);
       callback();
     };
     img.src = tile.url;
@@ -556,7 +574,7 @@ function setLatestImage() {
   }
 
   function sliderCallback(imageType: ImageType) {
-    getLatestSliderDate((latest: Date) => {
+    getLatestSliderDate(imageType, (latest: Date) => {
       setSliderImages(latest, imageType);
     });
   }
@@ -576,6 +594,7 @@ function setLatestImage() {
           break;
         case GOES_16:
         case GOES_16_NATURAL:
+        case GOES_17:
           sliderCallback(options.imageType);
           break;
         case METEOSAT:
@@ -667,6 +686,7 @@ document.getElementById("explore").addEventListener("click", () => {
       break;
     case GOES_16:
     case GOES_16_NATURAL:
+    case GOES_17:
       window.open(SLIDER_EXPLORER, "_self");
       break;
     case INFRARED:
