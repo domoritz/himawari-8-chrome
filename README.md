@@ -39,6 +39,7 @@ Here is a screenshot of the options dialog in Chrome:
 ## Changelog
 
 ```
+0.17.0 Add GOES 17
 0.16.1 Store large images with reduced quality until they fit
 0.16.0 Add Meteosat images thanks to @erget
 0.15.0 Add GOES 16 natural image thanks to @TheNeuralBit
