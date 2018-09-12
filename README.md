@@ -4,7 +4,16 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 
 🛰 **Get the extension from the [Chrome web store](https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm) or the [Firefox Add-on gallery](https://addons.mozilla.org/en-US/firefox/addon/satellite-new-tab-page/)**.
 
-![screenshot](https://raw.githubusercontent.com/domoritz/himawari-8-chrome/gh-pages/screenshot.png "Screenshot of the browser with the new tab page")
+![screenshot](screenshots/main.png "Screenshot of the browser with the new tab page")
+
+<p align="center">
+<img src="screenshots/infrared.png" width="150">
+  <img src="screenshots/goes16.png" width="150">
+  <img src="screenshots/goes16_natural.png" width="150">
+  <img src="screenshots/meteosat.png" width="150">
+  <img src="screenshots/dscovr.png" width="150">
+  <img src="screenshots/dscovr_enhanced.png" width="150">
+</p>
 
 This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ungoldman/himawari-urls.
 
@@ -21,6 +30,10 @@ This extension is inspired by https://glittering.blue/, https://github.com/jakie
 * Images are drawn on a canvas so that we can cache and load it easily.
 * The Earth always stay centered, thanks to CSS magic.
 * Earth is animated when it moves in (optional).
+
+Here is a screenshot of the options dialog in Chrome:
+
+<img src="screenshots/options.png" width="200">
 
 ## Changelog
 
