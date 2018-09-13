@@ -6,6 +6,8 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 
 ![screenshot](screenshots/main.png "Screenshot of the browser with the new tab page")
 
+Screenshots of the different satellite images supported by this extension (Himawari, GOES, Meteosat, and DSCOVR).
+
 <p align="center">
   <img src="screenshots/himawari.png" width="160">
   <img src="screenshots/infrared.png" width="160">
