@@ -7,13 +7,14 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 ![screenshot](screenshots/main.png "Screenshot of the browser with the new tab page")
 
 <p align="center">
-<img src="screenshots/infrared.png" width="150">
-  <img src="screenshots/goes16.png" width="150">
-  <img src="screenshots/goes16_natural.png" width="150">
-  <img src="screenshots/goes17.png" width="150">
-  <img src="screenshots/meteosat.png" width="150">
-  <img src="screenshots/dscovr.png" width="150">
-  <img src="screenshots/dscovr_enhanced.png" width="150">
+  <img src="screenshots/himawari.png" width="160">
+  <img src="screenshots/infrared.png" width="160">
+  <img src="screenshots/goes16.png" width="160">
+  <img src="screenshots/goes16_natural.png" width="160">
+  <img src="screenshots/goes17.png" width="160">
+  <img src="screenshots/meteosat.png" width="160">
+  <img src="screenshots/dscovr.png" width="160">
+  <img src="screenshots/dscovr_enhanced.png" width="160">
 </p>
 
 This extension is inspired by https://glittering.blue/, https://github.com/jakiestfu/himawari.js/ and https://github.com/ungoldman/himawari-urls.
