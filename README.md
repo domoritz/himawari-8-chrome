@@ -1,8 +1,20 @@
-# Himawari 8 New Tab Page (Chrome and Firefox)
+# 🛰 Himawari 8 New Tab Page (Chrome and Firefox)
 
 Experience the latest image taken by the [geostationary](https://en.wikipedia.org/wiki/Geostationary_orbit) [Himawari 8 satellite](http://himawari8.nict.go.jp/) every time you open a new tab in Chrome or Firefox. The Himawari satellite has been deployed by the [Japan Meteorological Agency](http://www.jma.go.jp/jma/indexe.html) and takes photographs of Earth every 10 minutes. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
 
-🛰 **Get the extension from the [Chrome web store](https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm) or the [Firefox Add-on gallery](https://addons.mozilla.org/en-US/firefox/addon/satellite-new-tab-page/)**.
+## Installation
+
+### Chrome Users:
+
+<a href="https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm">
+  <img src="images/download_chrome.png" alt="Download for Chrome" style="width: 206px; height: 58px">
+</a>
+
+### Firefox Users:
+
+<a href="https://addons.mozilla.org/en-US/firefox/addon/satellite-new-tab-page">
+  <img src="images/download_moz.png" alt="Download for Firefox" style="width: 172px; height: 60px">
+</a>
 
 ![screenshot](screenshots/main.png "Screenshot of the browser with the new tab page")
 
