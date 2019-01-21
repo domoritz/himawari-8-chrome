@@ -7,13 +7,13 @@ Experience the latest image taken by the [geostationary](https://en.wikipedia.or
 ### Chrome Users:
 
 <a href="https://chrome.google.com/webstore/detail/himawari-8-new-tab-page/llelgapflianaapmnpncgakfjhfhnojm">
-  <img src="images/download_chrome.png" alt="Download for Chrome" style="width: 206px; height: 58px">
+  <img src="icons/download_chrome.png" alt="Download for Chrome" style="width: 206px; height: 58px">
 </a>
 
 ### Firefox Users:
 
 <a href="https://addons.mozilla.org/en-US/firefox/addon/satellite-new-tab-page">
-  <img src="images/download_moz.png" alt="Download for Firefox" style="width: 172px; height: 60px">
+  <img src="icons/download_moz.png" alt="Download for Firefox" style="width: 172px; height: 60px">
 </a>
 
 ![screenshot](screenshots/main.png "Screenshot of the browser with the new tab page")
