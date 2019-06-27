@@ -1,3 +1,3 @@
 #!/bin/bash
 
-appcfg.py update .
+gcloud app deploy --project=himawari-8
