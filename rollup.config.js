@@ -11,8 +11,7 @@ export default {
   },
   plugins: [
     nodeResolve({
-      jsnext: true,
-      main: true
+      mainFields: ['jsnext', 'main']
     }),
     typescript({
       tsconfig: "tsconfig.json"
