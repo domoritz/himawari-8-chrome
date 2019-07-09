@@ -13,13 +13,13 @@
     "@types/d3-queue": "^3.0.8",
     "@types/d3-request": "^1.0.5",
     "@types/d3-time-format": "^2.1.1",
-    "rollup-plugin-node-resolve": "^5.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript2": "^0.21.2",
-    "rollup-plugin-terser": "^5.0.0",
-    "rollup": "^1.16.2",
+    "rollup-plugin-terser": "^5.1.1",
+    "rollup": "^1.16.7",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.2",
-    "web-ext-types": "^3.1.0"
+    "typescript": "^3.5.3",
+    "web-ext-types": "^3.2.0"
   },
   "scripts": {
     "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.* lib",
