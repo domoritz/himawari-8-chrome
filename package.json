@@ -4,18 +4,18 @@
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome or Firefox.",
   "main": "bundle.js",
   "dependencies": {
-    "d3-queue": "^3.0.7",
-    "d3-request": "^1.0.6",
     "d3-time-format": "^2.1.3",
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
     "@types/d3-time-format": "^2.1.1",
-    "rollup": "^1.16.7",
+    "@typescript-eslint/eslint-plugin": "^1.11.0",
+    "@typescript-eslint/parser": "^1.11.0",
+    "eslint": "^6.0.1",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.21.2",
-    "tslint": "^5.18.0",
+    "rollup": "^1.16.7",
     "typescript": "^3.5.3",
     "web-ext-types": "^3.2.0"
   },
@@ -28,7 +28,8 @@
     "bundle": "npm run bundle:firefox && npm run bundle:chrome",
     "bundle:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
     "bundle:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip lib/* icons/*.png index.html style.css bundle.js options.js options.html Roboto_Slab/*.ttf manifest.json",
-    "lint": "tslint -p ."
+    "lint": "eslint src/index.ts options.js",
+    "format": "eslint --fix src/index.ts options.js"
   },
   "repository": {
     "type": "git",

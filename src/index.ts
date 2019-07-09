@@ -53,99 +53,15 @@ const UNKNOWN: Date = null;
 
 const isExtension = window['browser'] && !!browser.storage;
 
-const DEFAULT_OPTIONS: {animated: boolean, imageType: ImageType} = {
+const DEFAULT_OPTIONS: {animated: boolean; imageType: ImageType} = {
   animated: false,
   imageType: VISIBLE_LIGHT,
 };
 
-interface ITile {
+interface Tile {
   x: number;
   y: number;
   url: string;
-}
-
-/**
- * Returns an array of objects containing URLs and metadata
- * for Himawari 8 image tiles based on a given date.
- * Options:
- * - date: Date object
- * - type: boolean (default: visible light)
- * - blocks: alternative to zoom, how many images per row/column (default: 1)
- *      Has to be a valid block number (1, 4, 8, 16, 20)
- *
- * @param  {Object}       options
- */
-function himawariURLs(options: {date: Date, type?: ImageType, blocks: number}) {
-  const baseURL = HIMAWARI_BASE_URL + (options.type || VISIBLE_LIGHT);
-  const date = options.date;
-
-  // Define some image parameters
-  const blocks = options.blocks;
-
-  // compose URL
-  const tilesURL = `${baseURL}/${blocks}d/${HIMAWARI_WIDTH}/${utcFormat("%Y/%m/%d/%H%M%S")(date)}`;
-  const tiles: ITile[] = [];
-
-  for (let y = 0; y < blocks; y++) {
-    for (let x = 0; x < blocks; x++) {
-      const url = `${tilesURL}_${x}_${y}.png`;
-
-      tiles.push({
-        url: getCachedUrl(url),
-        x,
-        y,
-      });
-    }
-  }
-
-  return {
-    blocks,
-    date,
-    tiles,
-  };
-}
-
-function sliderURLs(options: {date: Date, type: ImageType, blocks: number, level: number}) {
-  const date = options.date;
-
-  const blocks = options.blocks;
-  const level = options.level;
-
-  const typePath = {
-    GOES_16: "geocolor",
-    GOES_16_NATURAL: "natural_color",
-    GOES_17: "geocolor",
-  }[options.type];
-
-  const which = {
-    GOES_16: 16,
-    GOES_16_NATURAL: 16,
-    GOES_17: 17,
-  }[options.type];
-
-  const formattedDate = utcFormat("%Y%m%d")(options.date);
-  const formattedDateTime = utcFormat("%Y%m%d%H%M%S")(options.date);
-
-  const tilesURL = `${SLIDER_BASE_URL}imagery/${formattedDate}/goes-${which}---full_disk/${typePath}/${formattedDateTime}/`;
-  const tiles: ITile[] = [];
-
-  for (let y = 0; y < blocks; y++) {
-    for (let x = 0; x < blocks; x++) {
-      const url = `${tilesURL}${pad(level, 2)}/${pad(y, 3)}_${pad(x, 3)}.png`;
-
-      tiles.push({
-        url: getCachedUrl(url),
-        x,
-        y,
-      });
-    }
-  }
-
-  return {
-    blocks,
-    date,
-    tiles,
-  };
 }
 
 /**
@@ -170,6 +86,90 @@ function pad(num: string | number, size: number) {
 }
 
 /**
+ * Returns an array of objects containing URLs and metadata
+ * for Himawari 8 image tiles based on a given date.
+ * Options:
+ * - date: Date object
+ * - type: boolean (default: visible light)
+ * - blocks: alternative to zoom, how many images per row/column (default: 1)
+ *      Has to be a valid block number (1, 4, 8, 16, 20)
+ *
+ * @param  {Object}       options
+ */
+function himawariURLs(options: {date: Date; type?: ImageType; blocks: number}) {
+  const baseURL = HIMAWARI_BASE_URL + (options.type || VISIBLE_LIGHT);
+  const date = options.date;
+
+  // Define some image parameters
+  const blocks = options.blocks;
+
+  // compose URL
+  const tilesURL = `${baseURL}/${blocks}d/${HIMAWARI_WIDTH}/${utcFormat("%Y/%m/%d/%H%M%S")(date)}`;
+  const tiles: Tile[] = [];
+
+  for (let y = 0; y < blocks; y++) {
+    for (let x = 0; x < blocks; x++) {
+      const url = `${tilesURL}_${x}_${y}.png`;
+
+      tiles.push({
+        url: getCachedUrl(url),
+        x,
+        y,
+      });
+    }
+  }
+
+  return {
+    blocks,
+    date,
+    tiles,
+  };
+}
+
+function sliderURLs(options: {date: Date; type: ImageType; blocks: number; level: number}) {
+  const date = options.date;
+
+  const blocks = options.blocks;
+  const level = options.level;
+
+  const typePath = {
+    GOES_16: "geocolor",
+    GOES_16_NATURAL: "natural_color",
+    GOES_17: "geocolor",
+  }[options.type];
+
+  const which = {
+    GOES_16: 16,
+    GOES_16_NATURAL: 16,
+    GOES_17: 17,
+  }[options.type];
+
+  const formattedDate = utcFormat("%Y%m%d")(options.date);
+  const formattedDateTime = utcFormat("%Y%m%d%H%M%S")(options.date);
+
+  const tilesURL = `${SLIDER_BASE_URL}imagery/${formattedDate}/goes-${which}---full_disk/${typePath}/${formattedDateTime}/`;
+  const tiles: Tile[] = [];
+
+  for (let y = 0; y < blocks; y++) {
+    for (let x = 0; x < blocks; x++) {
+      const url = `${tilesURL}${pad(level, 2)}/${pad(y, 3)}_${pad(x, 3)}.png`;
+
+      tiles.push({
+        url: getCachedUrl(url),
+        x,
+        y,
+      });
+    }
+  }
+
+  return {
+    blocks,
+    date,
+    tiles,
+  };
+}
+
+/**
  * Get the date of the latest Himawari image by making an Ajax request.
  * @param   {string}  imageType  The type of image
  * @returns {date}  The parsed date
@@ -184,7 +184,7 @@ async function getLatestHimawariDate(imageType: ImageType) {
 
 async function getLatestDscovrDate(imageType: ImageType) {
   const raw = await fetch(`${DSCOVR_BASE_URL}api/${imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"}`);
-  const data: {date: string, image: string}[] = await raw.json();
+  const data: {date: string; image: string}[] = await raw.json();
 
   if (data.length === 0) { return null; }
 
@@ -210,7 +210,7 @@ async function getLatestSliderDate(imageType: ImageType) {
 
 async function getLatestMeteosatDate(imageType: ImageType) {
   const raw = await fetch(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`);
-  const data: {url: string, date: string} = await raw.json();
+  const data: {url: string; date: string} = await raw.json();
 
   return {
     date: utcParse("%Y-%m-%d %H:%M:%S")(data.date),
@@ -221,7 +221,7 @@ async function getLatestMeteosatDate(imageType: ImageType) {
 /**
  * Looks at the screen resolution and figures out a zoom level that returns images at a sufficient resolution.
  */
-function getOptimalNumberOfBlocks(width: number, sizes: number[]): {blocks: number, level: number} {
+function getOptimalNumberOfBlocks(width: number, sizes: number[]): {blocks: number; level: number} {
   const height = (document.getElementById("output")!).clientHeight * window.devicePixelRatio;
   const minNumber = height / width;
 
@@ -316,6 +316,27 @@ function updateStateAndUI(date: Date, imageType: ImageType) {
 }
 
 /**
+ * Cache the image.
+ */
+function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) {
+  // put date and image data in cache
+  const canvas = document.getElementById("output") as HTMLCanvasElement;
+  const imageData = canvas.toDataURL("image/jpeg", quality);
+  try {
+    localStorage.setItem(IMAGE_DATA_KEY, imageData);
+  } catch {
+    // try again with lower quality
+    if (quality > 0.5) {
+      quality -= 0.05;
+      console.warn(`Couldn't store image. Trying again with lower image quality of ${quality}`);
+      return storeCanvas(date, imageType, quality);
+    }
+  }
+  localStorage.setItem(CACHED_DATE_KEY, date.toString());
+  localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
+}
+
+/**
  * Creates an image composed of tiles.
  * @param {Date object} date  The date for which to load the data.
  */
@@ -348,7 +369,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
   ctx.canvas.height = pixels;
 
   // add image to canvas
-  function addImage(tile: ITile) {
+  function addImage(tile: Tile) {
     return new Promise((resolve) => {
       const img = new Image();
       img.setAttribute("crossOrigin", "anonymous");
@@ -380,7 +401,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
     });
 }
 
-function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageType) {
+function setDscovrImage(latest: {date: Date; image: string}, imageType: ImageType) {
   // no need to set images if we have up to date images and the image type has not changed
   if (loadedDate && latest.date.getTime() === loadedDate.getTime() && loadedType === imageType) {
     return;
@@ -453,7 +474,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
   ctx.canvas.height = pixels;
 
   // add image to canvas
-  function addImage(tile: ITile) {
+  function addImage(tile: Tile) {
     return new Promise((resolve) => {
       const img = new Image();
       img.setAttribute("crossOrigin", "anonymous");
@@ -485,7 +506,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
     });
 }
 
-function setMeteosatImages(latest: {date: Date, image: string}, imageType: ImageType) {
+function setMeteosatImages(latest: {date: Date; image: string}, imageType: ImageType) {
   // no need to set images if we have up to date images and the image type has not changed
   if (loadedDate && latest.date.getTime() === loadedDate.getTime() && loadedType === imageType) {
     return;
@@ -526,25 +547,6 @@ function setMeteosatImages(latest: {date: Date, image: string}, imageType: Image
   img.src = getCachedUrl(`${latest.image}`);
 }
 
-/** Cache the image. */
-function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) {
-  // put date and image data in cache
-  const canvas = document.getElementById("output") as HTMLCanvasElement;
-  const imageData = canvas.toDataURL("image/jpeg", quality);
-  try {
-    localStorage.setItem(IMAGE_DATA_KEY, imageData);
-  } catch {
-    // try again with lower quality
-    if (quality > 0.5) {
-      quality -= 0.05;
-      console.warn(`Couldn't store image. Trying again with lower image quality of ${quality}`);
-      return storeCanvas(date, imageType, quality);
-    }
-  }
-  localStorage.setItem(CACHED_DATE_KEY, date.toString());
-  localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
-}
-
 /* Load latest image(s) date and images for that date */
 async function setLatestImage() {
   if (!navigator.onLine) {
@@ -560,12 +562,12 @@ async function setLatestImage() {
     switch (imageType) {
       case DSCOVR_EPIC:
       case DSCOVR_EPIC_ENHANCED:
-          setDscovrImage(await getLatestDscovrDate(imageType), imageType);
+        setDscovrImage(await getLatestDscovrDate(imageType), imageType);
         break;
       case GOES_16:
       case GOES_16_NATURAL:
       case GOES_17:
-          setSliderImages(await getLatestSliderDate(imageType), imageType);
+        setSliderImages(await getLatestSliderDate(imageType), imageType);
         break;
       case METEOSAT:
       case METEOSAT_IODC:
@@ -650,6 +652,7 @@ document.getElementById("explore").addEventListener("click", () => {
   switch (loadedType) {
     case DSCOVR_EPIC:
       window.open(DSCOVR_EXPLORER, "_self");
+      break;
     case DSCOVR_EPIC_ENHANCED:
       window.open(DSCOVR_EXPLORER_ENHANCED, "_self");
       break;
