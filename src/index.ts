@@ -1,4 +1,3 @@
-import { json } from "d3-request";
 import { utcFormat, utcParse } from "d3-time-format";
 
 // base url for images
@@ -173,51 +172,50 @@ function pad(num: string | number, size: number) {
 /**
  * Get the date of the latest Himawari image by making an Ajax request.
  * @param   {string}  imageType  The type of image
- * @returns {function}           callback function
+ * @returns {date}  The parsed date
  */
-function getLatestHimawariDate(imageType: ImageType, cb: (date: Date) => void) {
-  json(`https://himawari-8.appspot.com/latest${imageType === INFRARED ? "?infrared=true" : ""}`,
-    (error, data: {date: string}) => {
-      if (error) { throw error; }
-      const latest = data.date;
-      cb(utcParse("%Y-%m-%d %H:%M:%S")(latest));
-    });
+async function getLatestHimawariDate(imageType: ImageType) {
+  const raw = await fetch(`https://himawari-8.appspot.com/latest${imageType === INFRARED ? "?infrared=true" : ""}`);
+  const data: {date: string} = await raw.json();
+
+  const latest = data.date;
+  return utcParse("%Y-%m-%d %H:%M:%S")(latest)
 }
 
-function getLatestDscovrDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
-  json(`${DSCOVR_BASE_URL}api/${imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"}`,
-    (error, data: Array<{date: string, image: string}>) => {
-      if (error) { throw error; }
-      if (data.length === 0) { return; }
-      const latest = data[data.length - 1];
-      cb({
-        date: utcParse("%Y-%m-%d %H:%M:%S")(latest.date),
-        image: latest.image,
-      });
-    });
+async function getLatestDscovrDate(imageType: ImageType) {
+  const raw = await fetch(`${DSCOVR_BASE_URL}api/${imageType === DSCOVR_EPIC_ENHANCED ? "enhanced" : "natural"}`);
+  const data: {date: string, image: string}[] = await raw.json();
+
+  if (data.length === 0) { return null; }
+
+  const latest = data[data.length - 1];
+  return {
+    date: utcParse("%Y-%m-%d %H:%M:%S")(latest.date),
+    image: latest.image,
+  }
 }
 
-function getLatestSliderDate(imageType: ImageType, cb: (date: Date) => void) {
+async function getLatestSliderDate(imageType: ImageType) {
   const which = {
     GOES_16: 16,
     GOES_16_NATURAL: 16,
     GOES_17: 17,
   }[imageType];
 
-  json(`${SLIDER_BASE_URL}json/goes-${which}/full_disk/geocolor/latest_times.json`, (error, data: {timestamps_int: string[]}) => {
-    if (error) { throw error; }
-    cb(utcParse("%Y%m%d%H%M%S")(data.timestamps_int[0]));
-  });
+  const raw = await fetch(`${SLIDER_BASE_URL}json/goes-${which}/full_disk/geocolor/latest_times.json`);
+  const data: {timestamps_int: string[]} = await raw.json();
+
+  return utcParse("%Y%m%d%H%M%S")(data.timestamps_int[0]);
 }
 
-function getLatestMeteosatDate(imageType: ImageType, cb: (latest: {date: Date, image: string}) => void) {
-  json(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`, (error, data: {url: string, date: string}) => {
-    if (error) { throw error; }
-    cb({
-      date: utcParse("%Y-%m-%d %H:%M:%S")(data.date),
-      image: data.url,
-    });
-  });
+async function getLatestMeteosatDate(imageType: ImageType) {
+  const raw = await fetch(`https://meteosat-url.appspot.com/msg${imageType === METEOSAT_IODC ? "iodc" : ""}`);
+  const data: {url: string, date: string} = await raw.json();
+
+  return {
+    date: utcParse("%Y-%m-%d %H:%M:%S")(data.date),
+    image: data.url,
+  }
 }
 
 /**
@@ -349,7 +347,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
   ctx.canvas.width = pixels;
   ctx.canvas.height = pixels;
 
-  // add image to canvas and call callback when done
+  // add image to canvas
   function addImage(tile: ITile) {
     return new Promise((resolve) => {
       const img = new Image();
@@ -454,7 +452,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
   ctx.canvas.width = pixels;
   ctx.canvas.height = pixels;
 
-  // add image to canvas and call callback when done
+  // add image to canvas
   function addImage(tile: ITile) {
     return new Promise((resolve) => {
       const img = new Image();
@@ -547,63 +545,41 @@ function storeCanvas(date: Date, imageType: ImageType, quality = IMAGE_QUALITY) 
   localStorage.setItem(CACHED_IMAGE_TYPE_KEY, imageType);
 }
 
-/* Asynchronously load latest image(s) date and images for that date */
-function setLatestImage() {
+/* Load latest image(s) date and images for that date */
+async function setLatestImage() {
   if (!navigator.onLine) {
     // browser is offline, no need to do this
     return;
   }
 
-  function himawariCallback(imageType: ImageType) {
-    getLatestHimawariDate(imageType, (latest: Date) => {
-      setHimawariImages(latest, imageType);
-    });
-  }
-
-  function dscovrCallback(imageType: ImageType) {
-    getLatestDscovrDate(imageType, (latest: {date: Date, image: string}) => {
-      setDscovrImage(latest, imageType);
-    });
-  }
-
-  function sliderCallback(imageType: ImageType) {
-    getLatestSliderDate(imageType, (latest: Date) => {
-      setSliderImages(latest, imageType);
-    });
-  }
-
-  function meteosatCallback(imageType: ImageType) {
-    getLatestMeteosatDate(imageType, (latest: {date: Date, image: string}) => {
-      setMeteosatImages(latest, imageType);
-    });
-  }
-
   if (isExtension) {
-    browser.storage.sync.get(DEFAULT_OPTIONS).then(options => {
-      switch (options.imageType) {
-        case DSCOVR_EPIC:
-        case DSCOVR_EPIC_ENHANCED:
-          dscovrCallback(options.imageType);
-          break;
-        case GOES_16:
-        case GOES_16_NATURAL:
-        case GOES_17:
-          sliderCallback(options.imageType);
-          break;
-        case METEOSAT:
-        case METEOSAT_IODC:
-          meteosatCallback(options.imageType);
-          break;
-        case INFRARED:
-        case VISIBLE_LIGHT:
-        default:
-          himawariCallback(options.imageType);
-          break;
-      }
-    });
+    document.title = "New Tab";
+
+    const {imageType} = await browser.storage.sync.get(DEFAULT_OPTIONS)
+
+    switch (imageType) {
+      case DSCOVR_EPIC:
+      case DSCOVR_EPIC_ENHANCED:
+          setDscovrImage(await getLatestDscovrDate(imageType), imageType);
+        break;
+      case GOES_16:
+      case GOES_16_NATURAL:
+      case GOES_17:
+          setSliderImages(await getLatestSliderDate(imageType), imageType);
+        break;
+      case METEOSAT:
+      case METEOSAT_IODC:
+        setMeteosatImages(await getLatestMeteosatDate(imageType), imageType)
+        break;
+      case INFRARED:
+      case VISIBLE_LIGHT:
+      default:
+        setHimawariImages(await getLatestHimawariDate(imageType), imageType)
+        break;
+    }
   } else {
     // if we are not in the extension, let's always load visible light
-    himawariCallback(VISIBLE_LIGHT);
+    setHimawariImages(await getLatestHimawariDate(VISIBLE_LIGHT), VISIBLE_LIGHT)
   }
 }
 

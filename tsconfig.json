@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es2016",
     "removeComments": true,
     "sourceMap": true,
     "noImplicitAny": false,
@@ -11,8 +12,5 @@
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"]
   },
-  "files": ["src/index.ts"],
-  "include": [
-    "src/**/*"
-  ]
+  "files": ["src/index.ts"]
 }
