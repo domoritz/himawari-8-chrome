@@ -52,7 +52,7 @@ const CACHED_IMAGE_TYPE_KEY = "cachedImageType";
 // unknown date
 const UNKNOWN: Date = null;
 
-const isExtension = browser && !!browser.storage;
+const isExtension = window['browser'] && !!browser.storage;
 
 const DEFAULT_OPTIONS: {animated: boolean, imageType: ImageType} = {
   animated: false,
