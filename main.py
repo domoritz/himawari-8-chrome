@@ -12,11 +12,12 @@ import webapp2
 
 class Handler(webapp2.RequestHandler):
     def get_current_meteosat(self, name):
-        """Download current Meteosat 0 full disc view."""
+        """Download current Meteosat full disc view."""
+        product_page = 'https://eumetview.eumetsat.int/static-images/' + name + '/RGB/NATURALCOLOR/FULLRESOLUTION/'
         try:
-            result = urlfetch.fetch('http://oiswww.eumetsat.org/IPPS/html/' + name + '/RGB/NATURALCOLOR/FULLRESOLUTION/')
+            result = urlfetch.fetch(product_page + 'index.htm')
             if result.status_code == 200:
-                image_url = ('http://oiswww.eumetsat.org/IPPS/html/' + name + '/RGB/NATURALCOLOR/FULLRESOLUTION/IMAGESDisplay/') + re.search(r'array_nom_imagen\[0\]="(\w*)"', result.content).group(1)
+                image_url = (product_page + 'IMAGESDisplay/') + re.search(r'array_nom_imagen\[0\]="(\w*)"', result.content).group(1)
                 date_string = re.search(r'\<option value="0"\>(.*)\<\/option\>', result.content).group(1)
                 # 19/06/18 15:00 UTC  -> 2018-06-19 15:00:00
                 date = datetime.datetime.strptime(date_string, "%d/%m/%y %H:%M UTC").strftime('%Y-%m-%d %H:%M:%S')
