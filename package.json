@@ -1,6 +1,6 @@
 {
   "name": "himawari",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome or Firefox.",
   "main": "bundle.js",
   "dependencies": {
@@ -11,10 +11,10 @@
   },
   "devDependencies": {
     "@types/d3-time-format": "^2.1.1",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript2": "^0.21.2",
-    "rollup-plugin-terser": "^5.1.1",
     "rollup": "^1.16.7",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.1",
+    "rollup-plugin-typescript2": "^0.21.2",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3",
     "web-ext-types": "^3.2.0"
