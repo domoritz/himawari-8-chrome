@@ -41,6 +41,7 @@ class Handler(webapp2.RequestHandler):
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.write(data)
 
+
 class MSGIODCHandler(Handler):
     ''' At 41.5 Degree '''
     def get(self):
@@ -51,6 +52,7 @@ class MSGHandler(Handler):
     ''' At 0 Degree '''
     def get(self):
         return self.get_with_name('MSG')
+
 
 app = webapp2.WSGIApplication([
     ('/msgiodc', MSGIODCHandler),
