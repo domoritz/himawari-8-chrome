@@ -10,7 +10,6 @@
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
-    "@types/d3-queue": "^3.0.8",
     "@types/d3-request": "^1.0.5",
     "@types/d3-time-format": "^2.1.1",
     "rollup-plugin-node-resolve": "^5.2.0",

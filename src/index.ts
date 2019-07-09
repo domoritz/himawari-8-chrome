@@ -1,4 +1,3 @@
-import { queue } from "d3-queue";
 import { json } from "d3-request";
 import { utcFormat, utcParse } from "d3-time-format";
 
@@ -350,40 +349,37 @@ function setHimawariImages(date: Date, imageType: ImageType) {
   ctx.canvas.width = pixels;
   ctx.canvas.height = pixels;
 
-  const q = queue();
-
   // add image to canvas and call callback when done
-  function addImage(tile: ITile, callback: () => void) {
-    const img = new Image();
-    img.setAttribute("crossOrigin", "anonymous");
-    img.onload = () => {
-      ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
-      callback();
-    };
-    img.src = tile.url;
+  function addImage(tile: ITile) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.setAttribute("crossOrigin", "anonymous");
+      img.onload = () => {
+        ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
+        resolve();
+      };
+      img.src = tile.url;
+    });
   }
 
-  result.tiles.forEach(tile => {
-    q.defer(addImage, tile);
-  });
+  Promise.all(result.tiles.map(tile => addImage(tile)))
+    .catch(error => {
+      throw error;
+    })
+    .then(() => {
+      if (!initialLoad) {
+        // copy canvas into output in one step
+        const output = document.getElementById("output") as HTMLCanvasElement;
+        const outCtx = output.getContext("2d");
+        outCtx.canvas.width = pixels;
+        outCtx.canvas.height = pixels;
+        outCtx.drawImage(canvas, 0, 0);
+      }
 
-  // wait for all images to be drawn on canvas
-  q.awaitAll(error => {
-    if (error) { throw error; }
+      updateStateAndUI(date, imageType);
 
-    if (!initialLoad) {
-      // copy canvas into output in one step
-      const output = document.getElementById("output") as HTMLCanvasElement;
-      const outCtx = output.getContext("2d");
-      outCtx.canvas.width = pixels;
-      outCtx.canvas.height = pixels;
-      outCtx.drawImage(canvas, 0, 0);
-    }
-
-    updateStateAndUI(date, imageType);
-
-    storeCanvas(date, imageType);
-  });
+      storeCanvas(date, imageType);
+    });
 }
 
 function setDscovrImage(latest: {date: Date, image: string}, imageType: ImageType) {
@@ -458,40 +454,37 @@ function setSliderImages(date: Date, imageType: ImageType) {
   ctx.canvas.width = pixels;
   ctx.canvas.height = pixels;
 
-  const q = queue();
-
   // add image to canvas and call callback when done
-  function addImage(tile: ITile, callback: () => void) {
-    const img = new Image();
-    img.setAttribute("crossOrigin", "anonymous");
-    img.onload = () => {
-      ctx.drawImage(img, tile.x * SLIDER_WIDTH, tile.y * SLIDER_WIDTH, SLIDER_WIDTH, SLIDER_WIDTH);
-      callback();
-    };
-    img.src = tile.url;
+  function addImage(tile: ITile) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.setAttribute("crossOrigin", "anonymous");
+      img.onload = () => {
+        ctx.drawImage(img, tile.x * SLIDER_WIDTH, tile.y * SLIDER_WIDTH, SLIDER_WIDTH, SLIDER_WIDTH);
+        resolve();
+      };
+      img.src = tile.url;
+    });
   }
 
-  result.tiles.forEach(tile => {
-    q.defer(addImage, tile);
-  });
-
-  // wait for all images to be drawn on canvas
-  q.awaitAll(error => {
-    if (error) { throw error; }
-
-    if (!initialLoad) {
-      // copy canvas into output in one step
-      const output = document.getElementById("output") as HTMLCanvasElement;
-      const outCtx = output.getContext("2d");
-      outCtx.canvas.width = pixels;
-      outCtx.canvas.height = pixels;
-      outCtx.drawImage(canvas, 0, 0);
-    }
-
-    updateStateAndUI(date, imageType);
-
-    storeCanvas(date, imageType);
-  });
+  Promise.all(result.tiles.map(tile => addImage(tile)))
+    .catch(error => {
+      throw error;
+    })
+    .then(() => {
+      if (!initialLoad) {
+        // copy canvas into output in one step
+        const output = document.getElementById("output") as HTMLCanvasElement;
+        const outCtx = output.getContext("2d");
+        outCtx.canvas.width = pixels;
+        outCtx.canvas.height = pixels;
+        outCtx.drawImage(canvas, 0, 0);
+      }
+  
+      updateStateAndUI(date, imageType);
+  
+      storeCanvas(date, imageType);
+    });
 }
 
 function setMeteosatImages(latest: {date: Date, image: string}, imageType: ImageType) {
