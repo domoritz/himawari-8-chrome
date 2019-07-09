@@ -55,6 +55,7 @@ Here is a screenshot of the options dialog in Chrome:
 ## Changelog
 
 ```
+0.18.0 Remove d3-request and d3-queue and instead use fetch and async
 0.17.0 Add GOES 17
 0.16.1 Store large images with reduced quality until they fit
 0.16.0 Add Meteosat images thanks to @erget
