@@ -13,7 +13,7 @@ import webapp2
 class Handler(webapp2.RequestHandler):
     def get_current_meteosat(self, name):
         """Download current Meteosat full disc view."""
-        product_page = 'https://eumetview.eumetsat.int/static-images/' + name + '/RGB/NATURALCOLOR/FULLRESOLUTION/'
+        product_page = 'https://eumetview.eumetsat.int/static-images/' + name + '/RGB/NATURALCOLORENHNCD/FULLRESOLUTION/'
         try:
             result = urlfetch.fetch(product_page + 'index.htm')
             if result.status_code == 200:
