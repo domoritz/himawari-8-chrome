@@ -9,15 +9,15 @@
   },
   "devDependencies": {
     "@types/d3-time-format": "^2.1.1",
-    "@typescript-eslint/eslint-plugin": "^1.11.0",
-    "@typescript-eslint/parser": "^1.11.0",
-    "eslint": "^6.0.1",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "eslint": "^6.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.1.1",
-    "rollup-plugin-typescript2": "^0.21.2",
-    "rollup": "^1.16.7",
+    "rollup-plugin-typescript2": "^0.22.1",
+    "rollup": "^1.19.4",
     "typescript": "^3.5.3",
-    "web-ext-types": "^3.2.0"
+    "web-ext-types": "^3.2.1"
   },
   "scripts": {
     "postinstall": "cp node_modules/webextension-polyfill/dist/browser-polyfill.* lib",
