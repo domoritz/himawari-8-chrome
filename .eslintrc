@@ -6,7 +6,7 @@
     "webextensions": true
   },
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
   },
   "extends": [
     "eslint:recommended",
