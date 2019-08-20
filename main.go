@@ -1,38 +1,47 @@
-package himawari
+package main
 
 import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/delay"
-	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/memcache"
-	"google.golang.org/appengine/urlfetch"
 )
 
-func init() {
+func main() {
 	http.HandleFunc("/latest", handler)
 	http.HandleFunc("/", home)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
 const baseURL = "http://himawari8-dl.nict.go.jp/himawari8/img/"
 const infrared = "INFRARED_FULL"
 const visible = "D531106"
 
-// time after which we should make an asynchronous request
+// Time after which we should make an asynchronous request.
 const timeoutUpdate = 1 * time.Minute
 
-// time after which we should make a synchronous request
+// Time after which we should make a synchronous request.
 const timeout = 5 * time.Minute
 
-// get the data about the latest image
-func downloadLatest(ctx context.Context, useInfraredImage bool) ([]byte, error) {
+// Get the data about the latest image.
+func downloadLatest(useInfraredImage bool) ([]byte, error) {
 	var buffer bytes.Buffer
 	buffer.WriteString(baseURL)
 
@@ -43,10 +52,9 @@ func downloadLatest(ctx context.Context, useInfraredImage bool) ([]byte, error) 
 	}
 	buffer.WriteString("/latest.json")
 
-	client := urlfetch.Client(ctx)
-	resp, err := client.Get(buffer.String())
+	resp, err := http.Get(buffer.String())
 	if err != nil {
-		log.Errorf(ctx, "error fetching data: %v", err)
+		log.Fatalf("error fetching data: %v", err)
 		return nil, err
 	}
 
@@ -58,9 +66,9 @@ func downloadLatest(ctx context.Context, useInfraredImage bool) ([]byte, error) 
 	return body, nil
 }
 
-// put the latest data in memcache
+// Put the latest data in memcache.
 func cacheLatest(ctx context.Context, useInfraredImage bool, dataKey, timeKey string) ([]byte, error) {
-	body, err := downloadLatest(ctx, useInfraredImage)
+	body, err := downloadLatest(useInfraredImage)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +80,7 @@ func cacheLatest(ctx context.Context, useInfraredImage bool, dataKey, timeKey st
 
 	timeBytes, err := time.Now().GobEncode()
 	if err != nil {
-		log.Errorf(ctx, "error encoding data: %v", err)
+		log.Fatalf("error encoding data: %v", err)
 	}
 	timeItem := &memcache.Item{
 		Key:   timeKey,
@@ -80,33 +88,33 @@ func cacheLatest(ctx context.Context, useInfraredImage bool, dataKey, timeKey st
 	}
 
 	if err := memcache.SetMulti(ctx, []*memcache.Item{dataItem, timeItem}); err != nil {
-		log.Errorf(ctx, "error setting items: %v", err)
+		log.Fatalf("error setting items: %v", err)
 	}
 
-	log.Infof(ctx, "updated memcached key %s", dataKey)
+	log.Printf("updated memcached key %s", dataKey)
 
 	return body, nil
 }
 
-// update the latest cached version and delete mutex
+// Update the latest cached version and delete mutex.
 var cacheLatestAsync = delay.Func("cacheLatest", func(ctx context.Context, useInfraredImage bool, dataKey, timeKey string) {
-	if item, err := memcache.Get(ctx, timeKey); err == memcache.ErrCacheMiss || !isUpToDate(ctx, item.Value, timeoutUpdate) {
-		log.Infof(ctx, "start delayed update for key %s", dataKey)
+	if item, err := memcache.Get(ctx, timeKey); err == memcache.ErrCacheMiss || !isUpToDate(item.Value, timeoutUpdate) {
+		log.Printf("start delayed update for key %s", dataKey)
 
 		_, err = cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
 		if err != nil {
-			log.Errorf(ctx, "error during update: %v", err)
+			log.Fatalf("error during update: %v", err)
 		}
 	}
 })
 
-// checks whether the time is within the timeout
-func isUpToDate(ctx context.Context, encodedTime []byte, timeout time.Duration) bool {
+// Checks whether the time is within the timeout.
+func isUpToDate(encodedTime []byte, timeout time.Duration) bool {
 	var then time.Time
 
 	err := then.GobDecode(encodedTime)
 	if err != nil {
-		log.Errorf(ctx, "error decoding date: %v", encodedTime)
+		log.Fatalf("error decoding date: %v", encodedTime)
 		return false
 	}
 
@@ -131,7 +139,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	timeKey := "time_" + imageKey
 
 	if items, err := memcache.GetMulti(ctx, []string{dataKey, timeKey}); err == memcache.ErrCacheMiss || items[dataKey] == nil || items[timeKey] == nil {
-		log.Infof(ctx, "item not in the cache")
+		log.Printf("item not in the cache")
 
 		body, err := cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
 		if err != nil {
@@ -141,26 +149,26 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, string(body))
 	} else if err != nil {
-		log.Errorf(ctx, "error getting item: %v", err)
+		log.Fatalf("error getting item: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	} else if !isUpToDate(ctx, items[timeKey].Value, timeout) {
-		log.Infof(ctx, "item too old")
+	} else if !isUpToDate(items[timeKey].Value, timeout) {
+		log.Printf("item too old")
 		body, err := cacheLatest(ctx, useInfraredImage, dataKey, timeKey)
 		if err != nil {
-			log.Errorf(ctx, "error synchronously getting data (data will be stale): %v", err)
+			log.Fatalf("error synchronously getting data (data will be stale): %v", err)
 			fmt.Fprintf(w, string(items[dataKey].Value))
 			return
 		}
 
 		fmt.Fprintf(w, string(body))
-	} else if !isUpToDate(ctx, items[timeKey].Value, timeoutUpdate) {
-		log.Infof(ctx, "item in the cache but not up to date")
+	} else if !isUpToDate(items[timeKey].Value, timeoutUpdate) {
+		log.Printf("item in the cache but not up to date")
 		fmt.Fprintf(w, string(items[dataKey].Value))
 
-		// update asynchronously but only if we are not fetching right now
+		// Update asynchronously but only if we are not fetching right now.
 		cacheLatestAsync.Call(ctx, useInfraredImage, dataKey, timeKey)
 	} else {
-		log.Infof(ctx, "item in the cache")
+		log.Printf("item in the cache")
 		fmt.Fprintf(w, string(items[dataKey].Value))
 	}
 }
