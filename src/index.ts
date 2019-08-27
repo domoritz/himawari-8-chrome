@@ -4,13 +4,13 @@ import { utcFormat, utcParse } from "d3-time-format";
 const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
 const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
-const SLIDER_BASE_URL = "http://rammb-slider.cira.colostate.edu/data/";
+const SLIDER_BASE_URL = "https://rammb-slider.cira.colostate.edu/data/";
 
 // links to online image explorers
 const HIMAWARI_EXPLORER = "http://himawari8.nict.go.jp/himawari8-image.htm?sI=D531106";
 const DSCOVR_EXPLORER = "https://epic.gsfc.nasa.gov";
 const DSCOVR_EXPLORER_ENHANCED = DSCOVR_EXPLORER + "/enhanced";
-const SLIDER_EXPLORER = "http://rammb-slider.cira.colostate.edu/";
+const SLIDER_EXPLORER = "https://rammb-slider.cira.colostate.edu/";
 const METEOSAT_EXPLORER = "http://oiswww.eumetsat.org/IPPS/html/MSG/IMAGERY/";
 
 // image types
