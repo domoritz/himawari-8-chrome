@@ -10,7 +10,7 @@
   },
   "permissions": [
     "storage",
-    "http://rammb-slider.cira.colostate.edu/"
+    "https://rammb-slider.cira.colostate.edu/"
   ],
   "minimum_chrome_version": "42",
   "offline_enabled": true,

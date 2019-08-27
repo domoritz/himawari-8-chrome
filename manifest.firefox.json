@@ -16,7 +16,7 @@
   },
   "permissions": [
     "storage",
-    "http://rammb-slider.cira.colostate.edu/"
+    "https://rammb-slider.cira.colostate.edu/"
   ],
   "icons": {
     "128": "icons/icon128.png",
