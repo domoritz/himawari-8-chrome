@@ -2,7 +2,7 @@
 
 Experience the latest image taken by the [geostationary](https://en.wikipedia.org/wiki/Geostationary_orbit) [Himawari 8 satellite](http://himawari8.nict.go.jp/) every time you open a new tab in Chrome or Firefox. The Himawari satellite has been deployed by the [Japan Meteorological Agency](http://www.jma.go.jp/jma/indexe.html) and takes photographs of Earth every 10 minutes. Since the new tab page is a simple web page, you can also [try it online](https://domoritz.github.io/himawari-8-chrome).
 
-The browser extension supports multiple satellites: Himawari, GOES, Meteosat, and DSCOVR. 
+**The browser extension supports multiple satellites: Himawari, GOES, Meteosat, and DSCOVR.**
 
 ## Installation
 
