@@ -10,14 +10,14 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install deps
-      run: nuxt/actions-yarn@master
+      uses: borales/actions-yarn@master
       with:
         args: install
     - name: Lint
-      run: nuxt/actions-yarn@master
+      uses: borales/actions-yarn@master
       with:
         args: lint
     - name: Build
-      run: nuxt/actions-yarn@master
+      uses: borales/actions-yarn@master
       with:
         args: build
