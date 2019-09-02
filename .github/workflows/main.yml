@@ -1,0 +1,20 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install deps
+      run: nuxt/actions-yarn@master
+      args: install
+    - name: Lint
+      run: nuxt/actions-yarn@master
+      args: lint
+    - name: Build
+      run: nuxt/actions-yarn@master
+      args: build
