@@ -11,10 +11,13 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install deps
       run: nuxt/actions-yarn@master
-      args: install
+      with:
+        args: install
     - name: Lint
       run: nuxt/actions-yarn@master
-      args: lint
+      with:
+        args: lint
     - name: Build
       run: nuxt/actions-yarn@master
-      args: build
+      with:
+        args: build
