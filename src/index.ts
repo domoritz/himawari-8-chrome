@@ -1,7 +1,7 @@
 import { utcFormat, utcParse } from "d3-time-format";
 
 // base url for images
-const HIMAWARI_BASE_URL = "https://himawari8-dl.nict.go.jp/himawari8/img/";
+const HIMAWARI_BASE_URL = "https://himawari8.nict.go.jp/himawari8/img/";
 const DSCOVR_BASE_URL = "https://epic.gsfc.nasa.gov/";
 
 const SLIDER_BASE_URL = "https://rammb-slider.cira.colostate.edu/data/";
@@ -71,7 +71,12 @@ interface Tile {
  * Default caching is 5 days, in seconds
  */
 function getCachedUrl(url: string, cache = 5 * 24 * 60 * 60) {
-  return `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=${url}&container=focus&refresh=${cache}`;
+  if (isExtension) {
+    // don't use cache in the extension
+    return url;
+  } else {
+    return `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?url=${url}&container=focus&refresh=${cache}`;
+  }
 }
 
 /**
@@ -544,7 +549,7 @@ function setMeteosatImages(latest: {date: Date; image: string}, imageType: Image
     storeCanvas(latest.date, imageType);
   };
 
-  img.src = getCachedUrl(`${latest.image}`);
+  img.src = getCachedUrl(latest.image);
 }
 
 /* Load latest image(s) date and images for that date */
