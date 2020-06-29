@@ -57,6 +57,7 @@ Here is a screenshot of the options dialog in Chrome:
 ## Changelog
 
 ```
+0.19.1 Fix Himawari base URL.
 0.19.0 Disable unreliable image cache in extension.
 0.18.1 Fix GOES URLs. Thanks to @mattijn.
 0.18.0 Remove d3-request and d3-queue and instead use fetch and async
