@@ -28,7 +28,7 @@
     "bundle": "npm run bundle:firefox && npm run bundle:chrome && npm run bundle:src",
     "bundle:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip lib/* icons/*.png index.html style.css bundle.js bundle.js.map options.js options.html Roboto_Slab/*.ttf manifest.json",
     "bundle:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip lib/* icons/*.png index.html style.css bundle.js options.js bundle.js.map options.html Roboto_Slab/*.ttf manifest.json",
-    "bundle:src": "zip -r source.zip src package.json lib index.html manifest*.json options.* rollup.config.js style.css tsconfig.json yarn.lock",
+    "bundle:src": "zip -r source.zip src package.json lib index.html manifest*.json options.* rollup.config.js style.css tsconfig.json yarn.lock README.md",
     "lint": "eslint src/index.ts options.js",
     "format": "eslint --fix src/index.ts options.js"
   },
