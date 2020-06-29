@@ -1,6 +1,6 @@
 {
   "name": "himawari",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "description": "Experience the latest image from the Himawari 8 satellite every time you open a new tab in Chrome or Firefox.",
   "main": "bundle.js",
   "dependencies": {
@@ -25,9 +25,10 @@
     "watch": "rollup -w -c",
     "start": "python -m http.server",
     "prebundle": "npm run build",
-    "bundle": "npm run bundle:firefox && npm run bundle:chrome",
+    "bundle": "npm run bundle:firefox && npm run bundle:chrome && npm run bundle:src",
     "bundle:chrome": "cp manifest.chrome.json manifest.json && zip himawari_chrome.zip lib/* icons/*.png index.html style.css bundle.js bundle.js.map options.js options.html Roboto_Slab/*.ttf manifest.json",
     "bundle:firefox": "cp manifest.firefox.json manifest.json && zip himawari_firefox.zip lib/* icons/*.png index.html style.css bundle.js options.js bundle.js.map options.html Roboto_Slab/*.ttf manifest.json",
+    "bundle:src": "zip -r source.zip src package.json lib index.html manifest*.json options.* rollup.config.js style.css tsconfig.json yarn.lock",
     "lint": "eslint src/index.ts options.js",
     "format": "eslint --fix src/index.ts options.js"
   },
