@@ -17,6 +17,10 @@ Install AppEngine for golang and then run `dev_appserver.py app.yaml`.
 
 Run `gcloud app deploy --project=himawari-8`.
 
+### Deploy from cloud shell
+
+Move the code into `/home/domoritz/gopath/src/himawari-8`. Then run `gcloud app deploy`.
+
 ## Try
 
 Get latest true color data: https://himawari-8.appspot.com/latest
