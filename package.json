@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/d3-time-format": "^2.1.1",
-    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
     "eslint": "^7.5.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
