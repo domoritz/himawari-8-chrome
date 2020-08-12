@@ -57,7 +57,8 @@ Here is a screenshot of the options dialog in Chrome:
 ## Changelog
 
 ```
-0.19.1, 0.19.2  Fix Himawari base URL.
+0.20.0 Support natural variant for GOES 17 west.
+0.19.1, 0.19.2 Fix Himawari base URL.
 0.19.0 Disable unreliable image cache in extension.
 0.18.1 Fix GOES URLs. Thanks to @mattijn.
 0.18.0 Remove d3-request and d3-queue and instead use fetch and async
