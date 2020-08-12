@@ -21,11 +21,12 @@ const DSCOVR_EPIC_ENHANCED = "EPIC_ENHANCED";
 const GOES_16 = "GOES_16";
 const GOES_16_NATURAL = "GOES_16_NATURAL";
 const GOES_17 = "GOES_17";
+const GOES_17_NATURAL = "GOES_17_NATURAL";
 const METEOSAT = "METEOSAT";
 const METEOSAT_IODC = "METEOSAT_IODC";
 
 type ImageType = typeof INFRARED | typeof VISIBLE_LIGHT | typeof DSCOVR_EPIC |
-  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL| typeof GOES_17 |
+  typeof DSCOVR_EPIC_ENHANCED | typeof GOES_16 | typeof GOES_16_NATURAL | typeof GOES_17 | typeof GOES_17_NATURAL |
   typeof METEOSAT | typeof METEOSAT_IODC;
 
 const HIMAWARI_WIDTH = 550;
@@ -141,12 +142,14 @@ function sliderURLs(options: {date: Date; type: ImageType; blocks: number; level
     GOES_16: "geocolor",
     GOES_16_NATURAL: "natural_color",
     GOES_17: "geocolor",
+    GOES_17_NATURAL: "natural_color",
   }[options.type];
 
   const which = {
     GOES_16: 16,
     GOES_16_NATURAL: 16,
     GOES_17: 17,
+    GOES_17_NATURAL: 17,
   }[options.type];
 
   const formattedDate = utcFormat("%Y%m%d")(options.date);
@@ -205,6 +208,7 @@ async function getLatestSliderDate(imageType: ImageType) {
     GOES_16: 16,
     GOES_16_NATURAL: 16,
     GOES_17: 17,
+    GOES_17_NATURAL: 17,
   }[imageType];
 
   const raw = await fetch(`${SLIDER_BASE_URL}json/goes-${which}/full_disk/geocolor/latest_times.json`);
@@ -302,6 +306,7 @@ function setBodyClass(imageType: ImageType) {
     case GOES_16:
     case GOES_16_NATURAL:
     case GOES_17:
+    case GOES_17_NATURAL:
       document.body.classList.add("goes");
       break;
     case METEOSAT:
@@ -504,9 +509,9 @@ function setSliderImages(date: Date, imageType: ImageType) {
         outCtx.canvas.height = pixels;
         outCtx.drawImage(canvas, 0, 0);
       }
-  
+
       updateStateAndUI(date, imageType);
-  
+
       storeCanvas(date, imageType);
     });
 }
@@ -572,6 +577,7 @@ async function setLatestImage() {
       case GOES_16:
       case GOES_16_NATURAL:
       case GOES_17:
+      case GOES_17_NATURAL:
         setSliderImages(await getLatestSliderDate(imageType), imageType);
         break;
       case METEOSAT:
@@ -664,6 +670,7 @@ document.getElementById("explore").addEventListener("click", () => {
     case GOES_16:
     case GOES_16_NATURAL:
     case GOES_17:
+    case GOES_17_NATURAL:
       window.open(SLIDER_EXPLORER, "_self");
       break;
     case INFRARED:
