@@ -19,7 +19,7 @@ Run `gcloud app deploy --project=himawari-8`.
 
 ### Deploy from cloud shell
 
-Move the code into `/home/domoritz/gopath/src/himawari-8`. Then run `gcloud app deploy`.
+Move the code into `$GOPATH/src/himawari-8`. Then run `gcloud app deploy`.
 
 ## Try
 
