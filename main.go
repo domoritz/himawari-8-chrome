@@ -22,7 +22,7 @@ func main() {
 	appengine.Main()
 }
 
-const baseURL = "http://himawari8-dl.nict.go.jp/himawari8/img/"
+const baseURL = "https://himawari8-dl.nict.go.jp/himawari8/img/"
 const infrared = "INFRARED_FULL"
 const visible = "D531106"
 
