@@ -11,7 +11,7 @@
     "@types/d3-time-format": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
-    "eslint": "^7.15.0",
+    "eslint": "^7.16.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.29.0",
