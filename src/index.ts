@@ -380,12 +380,12 @@ function setHimawariImages(date: Date, imageType: ImageType) {
 
   // add image to canvas
   function addImage(tile: Tile) {
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       const img = new Image();
       img.setAttribute("crossOrigin", "anonymous");
       img.onload = () => {
         ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
-        resolve(null);
+        resolve();
       };
       img.src = tile.url;
     });
@@ -485,12 +485,12 @@ function setSliderImages(date: Date, imageType: ImageType) {
 
   // add image to canvas
   function addImage(tile: Tile) {
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       const img = new Image();
       img.setAttribute("crossOrigin", "anonymous");
       img.onload = () => {
         ctx.drawImage(img, tile.x * SLIDER_WIDTH, tile.y * SLIDER_WIDTH, SLIDER_WIDTH, SLIDER_WIDTH);
-        resolve(null);
+        resolve();
       };
       img.src = tile.url;
     });
