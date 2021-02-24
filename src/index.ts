@@ -385,7 +385,7 @@ function setHimawariImages(date: Date, imageType: ImageType) {
       img.setAttribute("crossOrigin", "anonymous");
       img.onload = () => {
         ctx.drawImage(img, tile.x * HIMAWARI_WIDTH, tile.y * HIMAWARI_WIDTH, HIMAWARI_WIDTH, HIMAWARI_WIDTH);
-        resolve();
+        resolve(null);
       };
       img.src = tile.url;
     });
@@ -490,7 +490,7 @@ function setSliderImages(date: Date, imageType: ImageType) {
       img.setAttribute("crossOrigin", "anonymous");
       img.onload = () => {
         ctx.drawImage(img, tile.x * SLIDER_WIDTH, tile.y * SLIDER_WIDTH, SLIDER_WIDTH, SLIDER_WIDTH);
-        resolve();
+        resolve(null);
       };
       img.src = tile.url;
     });
