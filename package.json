@@ -16,7 +16,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.30.0",
     "rollup": "^2.45.1",
-    "typescript": "^4.2.3",
+    "typescript": "^4.2.4",
     "web-ext-types": "^3.2.1"
   },
   "scripts": {
