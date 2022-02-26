@@ -57,6 +57,7 @@ Here is a screenshot of the options dialog in Chrome:
 ## Changelog
 
 ```
+0.21.0 Update RAMMB URL format. Move to manifest v3 for Chrome.
 0.20.0 Support natural variant for GOES 17 west.
 0.19.1, 0.19.2 Fix Himawari base URL.
 0.19.0 Disable unreliable image cache in extension.
