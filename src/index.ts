@@ -152,7 +152,7 @@ function sliderURLs(options: {date: Date; type: ImageType; blocks: number; level
     GOES_17_NATURAL: 17,
   }[options.type];
 
-  const formattedDate = utcFormat("%Y%m%d")(options.date);
+  const formattedDate = utcFormat("%Y/%m/%d")(options.date);
   const formattedDateTime = utcFormat("%Y%m%d%H%M%S")(options.date);
 
   const tilesURL = `${SLIDER_BASE_URL}imagery/${formattedDate}/goes-${which}---full_disk/${typePath}/${formattedDateTime}/`;
