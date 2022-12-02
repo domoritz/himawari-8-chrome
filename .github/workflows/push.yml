@@ -11,8 +11,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - uses: actions/setup-node@v3
-        with:
-          cache: "yarn"
+      with:
+        cache: "yarn"
     - name: Install Node dependencies
       run: yarn --frozen-lockfile
     - name: Lint
