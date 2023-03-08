@@ -1,7 +1,2 @@
-runtime: python27
-api_version: 1
-threadsafe: true
-
-handlers:
-- url: /.*
-  script: main.app
+runtime: python311
+app_engine_apis: true

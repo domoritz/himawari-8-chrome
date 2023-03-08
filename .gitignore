@@ -1,3 +1,5 @@
 .mypy_cache
 *.pyc
 node_modules
+lib
+__pycache__

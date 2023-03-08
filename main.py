@@ -1,60 +1,64 @@
 #!/usr/bin/env python
 
 import datetime
-import json
 import logging
+import json
 import re
+import requests
 
-from google.appengine.api import memcache, urlfetch
+from flask import Flask, jsonify
+from google.appengine.api import memcache, wrap_wsgi_app
 
-import webapp2
+app = Flask(__name__)
+app.wsgi_app = wrap_wsgi_app(app.wsgi_app)
 
+def get_current_meteosat(name):
+    """Download current Meteosat full disc view."""
+    product_page = 'https://eumetview.eumetsat.int/static-images/' + name + '/RGB/NATURALCOLORENHNCD/FULLRESOLUTION/'
+    try:
+        result = requests.get(product_page + 'index.htm')
+        if result.status_code == 200:
+            image_url = (product_page + 'IMAGESDisplay/') + re.search(r'array_nom_imagen\[0\]="(\w*)"', result.text).group(1)
+            date_string = re.search(r'\<option value="0"\>(.*)\<\/option\>', result.text).group(1)
+            # 19/06/18 15:00 UTC  -> 2018-06-19 15:00:00
+            date = datetime.datetime.strptime(date_string, "%d/%m/%y %H:%M UTC").strftime('%Y-%m-%d %H:%M:%S')
 
-class Handler(webapp2.RequestHandler):
-    def get_current_meteosat(self, name):
-        """Download current Meteosat full disc view."""
-        product_page = 'https://eumetview.eumetsat.int/static-images/' + name + '/RGB/NATURALCOLORENHNCD/FULLRESOLUTION/'
-        try:
-            result = urlfetch.fetch(product_page + 'index.htm')
-            if result.status_code == 200:
-                image_url = (product_page + 'IMAGESDisplay/') + re.search(r'array_nom_imagen\[0\]="(\w*)"', result.content).group(1)
-                date_string = re.search(r'\<option value="0"\>(.*)\<\/option\>', result.content).group(1)
-                # 19/06/18 15:00 UTC  -> 2018-06-19 15:00:00
-                date = datetime.datetime.strptime(date_string, "%d/%m/%y %H:%M UTC").strftime('%Y-%m-%d %H:%M:%S')
+            return {
+                'url': image_url,
+                'date': date
+            }, 200
+        else:
+            return result.text, result.status_code
+    except Exception:
+        logging.exception('Caught exception fetching url')
+        return 'Error', 500
 
-                return {
-                    'url': image_url,
-                    'date': date
-                }
-            else:
-                self.response.status_code = result.status_code
-        except urlfetch.Error:
-            logging.exception('Caught exception fetching url')
+def get_with_name(name):
+    data = memcache.get(name)
+    if data is None:
+        data, code = get_current_meteosat(name)
+        if code != 200:
+            return data, code
+        memcache.set(name, json.dumps(data), 120)
+    else:
+        data = json.loads(data)
 
-    def get_with_name(self, name):
-        data = memcache.get(name)
-        if data is None:
-            data = json.dumps(self.get_current_meteosat(name))
-            memcache.add(name, data, 120)
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
-        self.response.headers['Content-Type'] = 'text/json'
-        self.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.response.write(data)
-
-
-class MSGIODCHandler(Handler):
+@app.route('/msgiodc')
+def get_MSGIODC():
     ''' At 41.5 Degree '''
-    def get(self):
-        return self.get_with_name('MSGIODC')
+    return get_with_name('MSGIODC')
 
-
-class MSGHandler(Handler):
+@app.route('/msg')
+def get_MSG():
     ''' At 0 Degree '''
-    def get(self):
-        return self.get_with_name('MSG')
+    return get_with_name('MSG')
 
-
-app = webapp2.WSGIApplication([
-    ('/msgiodc', MSGIODCHandler),
-    ('/msg', MSGHandler),
-], debug=True)
+if __name__ == "__main__":
+    # Used when running locally only. When deploying to Google App
+    # Engine, a webserver process such as Gunicorn will serve the app. This
+    # can be configured by adding an `entrypoint` to app.yaml.
+    app.run(host="localhost", port=8080, debug=True)

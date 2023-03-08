@@ -1,0 +1,3 @@
+Flask==2.2.2
+appengine-python-standard>=1.0.0
+requests
