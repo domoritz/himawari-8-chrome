@@ -169,10 +169,10 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@types/d3-time-format@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@types/d3-time-format/-/d3-time-format-4.0.1.tgz#c47d933c2998ddc61a3133da64c0b8f0a5ecdefa"
-  integrity sha512-Br6EFeu9B1Zrem7KaYbr800xCmEDyq8uE60kEU8rWhC/XpFYX6ocGMZuRJDQfFCq6SyakQxNHFqIfJbFLf4x6Q==
+"@types/d3-time-format@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/d3-time-format/-/d3-time-format-4.0.2.tgz#8b1c74e3f8f1bb2927d94de9bc18a85369898070"
+  integrity sha512-wr08C1Gh77qaN8JIkrn5Rz/bdt5M9bdEqFmEOcYhUSq2t2sHvLTBfb4XAtGB3D4hm0ubj50NXWWXoXyp5tPXDg==
 
 "@types/estree@^1.0.0":
   version "1.0.0"
